@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% load category_list_tags %}
+{% load measurements %}
+
+{% block title %}Главная страница{% endblock title %}
+
+{% block content %}
+        <!-- Main Slider Start -->
+        <div class="header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="list-group">
+                            {% for category in categories %}
+                            <a href="{{ category.get_absolute_url }}" class="list-group-item list-group-item-action btn btn-outline-danger">{{ category.title }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="header-slider normal-slider">
+                            {% for product_1, product_2 in high_ratting_products_for_main_slider %}
+                                <div class="header-slider-item">
+                                    <img style="width: 49%; display: inline;" src="{{ product_1.image.url }}" alt="{{ product_1.title }}" />
+                                    <img style="width: 49%; display: inline;" src="{{ product_2.image.url }}" alt="{{ product_2.title }}" />
+                                    <div class="header-slider-caption">
+                                        <p>{{ product_1.category.category.title }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                        <!-- Side Bar Start -->
+                        <div class="col-lg-3">
+                            <div class="widget-slider">
+                                <div class="sidebar-slider normal-slider">
+                                    {% for product in side_products %}
+                                    <div class="product-item">
+                                        <div class="product-title">
+                                            <a href="{{ product.get_absolute_url }}" style="font-size: 12px;">{{ product.title|remove_code_from_product_title }}</a>
+                                            <div class="ratting">
+                                                {% if product.rounded_ratting != 0 %}
+                                                <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                {% else %}
+                                                <br>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="product-image-my">
+                                            <a href="{{ product.get_absolute_url }}">
+                                                <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                                            </a>
+                                        </div>
+                                        <div class="product-price">
+                                            <h3 style="font-size: 24px;">{{ product.price }}<span>грн.</span></h3>
+                                            <a class="btn" href="{{ product.get_absolute_url }}"><i class="fa fa-search"></i>Подробнее</a>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Side Bar End -->
+                    </div>
+                </div>
+            </div>
+        <!-- Main Slider End -->
+        <hr>
+        <!-- Feature Start-->
+        <div class="feature">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 col-md-6 feature-col">
+                        <div class="feature-content">
+                            <i class="fab fa-cc-mastercard"></i>
+                            <h2>Надежная оплата</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 feature-col">
+                        <div class="feature-content">
+                            <i class="fa fa-truck"></i>
+                            <h2>Доставка по всей Украине</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 feature-col">
+                        <div class="feature-content">
+                            <i class="fa fa-sync-alt"></i>
+                            <h2>14 дней возврата</h2>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 feature-col">
+                        <div class="feature-content">
+                            <i class="fa fa-comments"></i>
+                            <h2>Поддержка</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Feature End-->
+
+        <!-- Call to Action Start -->
+        <div class="call-to-action">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1>Пишите нам по любым вопросам</h1>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" style="pointer-events: none;">d.s.h.o.p.p.p.p.p.p@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Call to Action End -->
+
+        <!-- Featured Product Start -->
+        <div class="featured-product product">
+            <div class="container-fluid">
+                <div class="section-header">
+                    <h1>Самые популярные</h1>
+                </div>
+                <div class="row align-items-center product-slider product-slider-4">
+                   {% for product in most_popular_products %}
+                    <div class="col-lg-3">
+                        <div class="product-item">
+                            <div class="product-title">
+                                <a href="{{ product.get_absolute_url }}" style="font-size: 12px;">{{ product.title|remove_code_from_product_title }}</a>
+                                <div class="ratting">
+                                    {% if product.rounded_ratting != 0 %}
+                                    <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    {% else %}
+                                    <br>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="product-image-my">
+                                <a href="{{ product.get_absolute_url }}">
+                                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                                </a>
+                            </div>
+                            <div class="product-price">
+                                <h3 style="font-size: 24px;">{{ product.price }}<span>грн.</span></h3>
+                                <a class="btn" href="{{ product.get_absolute_url }}"><i class="fa fa-search"></i>Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- Featured Product End -->
+
+        <!-- Newsletter Start -->
+        <div class="call-to-action">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1>Звоните нам по любым вопросам</h1>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" style="pointer-events: none;">+380674278265</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Newsletter End -->
+
+        <!-- Recent Product Start -->
+        <div class="recent-product product">
+            <div class="container-fluid">
+                <div class="section-header">
+                    <h1>Новинки</h1>
+                </div>
+                <div class="row align-items-center product-slider product-slider-4">
+                   {% for product in recent_products %}
+                    <div class="col-lg-3">
+                        <div class="product-item">
+                            <div class="product-title">
+                                <a href="{{ product.get_absolute_url }}" style="font-size: 12px;">{{ product.title|remove_code_from_product_title }}</a>
+                                <div class="ratting">
+                                    {% if product.rounded_ratting != 0 %}
+                                    <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                    {% else %}
+                                    <br>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="product-image-my">
+                                <a href="{{ product.get_absolute_url }}">
+                                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                                </a>
+                            </div>
+                            <div class="product-price">
+                                <h3 style="font-size: 24px;">{{ product.price }}<span>грн.</span></h3>
+                                <a class="btn" href="{{ product.get_absolute_url }}"><i class="fa fa-search"></i>Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- Recent Product End -->
+{% endblock content %}

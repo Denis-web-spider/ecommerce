@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% load category_list_tags %}
+
+{% block title %}Базовый шаблон для списка продуктов категории{% endblock title %}
+
+{% block content %}
+        <!-- Breadcrumb Start -->
+        {% block breadcrumb %}
+        {% endblock breadcrumb %}
+        <!-- Breadcrumb End -->
+
+        <!-- Product List Start -->
+        <div class="product-view">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Main Slider Start -->
+                    {% block slider %}
+                    {% endblock slider %}
+                    <!-- Main Slider End -->
+                    <div class="col-lg-8">
+                        <div class="row">
+                            {% block search %}
+                            {% endblock search %}
+                            {% for product in products %}
+                                <div class="col-lg-4">
+                                    <div class="widget-slider">
+                                        <div class="sidebar-slider-my normal-slider">
+                                            {% for image in product.images_for_category_list %}
+                                                <div class="product-item">
+                                                    <div class="product-title">
+                                                        <a href="{{ product.get_absolute_url }}" style="font-size: 12px;">{{ product.title|remove_code_from_product_title }}</a>
+                                                        <div class="ratting">
+                                                            {% if product.rounded_ratting != 0 %}
+                                                                <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            {% else %}
+                                                                <br>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-image-my">
+                                                        <a href="{{ product.get_absolute_url }}">
+                                                            <img src="{{ image.image.url }}" alt="{{ image.title }}">
+                                                        </a>
+                                                    </div>
+                                                    <div class="product-price">
+                                                        <h3 style="font-size: 22px;">{{ product.price }}<span>грн.</span></h3>
+                                                        <a class="btn" href="{{ product.get_absolute_url }}"><i class="fa fa-search"></i>Подробнее</a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Pagination Start -->
+                        {% block pagination %}
+                        {% endblock pagination %}
+                        <!-- Pagination End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock content %}

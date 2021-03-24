@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Оформление заказа{% endblock title %}
+
+{% block content %}
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+    <div class="container-fluid">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item active">Оформление заказа</li>
+        </ul>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<div class="cart-page">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="cart-page-inner">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Продукт</th>
+                                    <th>Цена</th>
+                                    <th>Размер</th>
+                                    <th>Цвет</th>
+                                    <th>Количество</th>
+                                    <th>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody class="align-middle">
+                                {% for item in items %}
+                                    <tr>
+                                        <td>
+                                            <div class="img">
+                                                <a href="{{ item.product.get_absolute_url }}"><img src="{{ item.product.image.url }}" alt="{{ item.product.title }}"></a>
+                                                <p>{{ item.product.title }}</p>
+                                            </div>
+                                        </td>
+                                        <td>{{ item.product.price }}грн.</td>
+                                        <td>{{ item.size }}</td>
+                                        <td>{{ item.color }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.total_price }}грн.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <br>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h2>Общая стоимость корзины</h2>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <h2>{{ cart.total_price }}грн.</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Checkout Start -->
+<div class="checkout">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="checkout-inner">
+                    <div class="billing-address">
+                        <form action="{% url 'checkout' %}" method="post" id="checkout-form">{% csrf_token %}</form>
+                        <h2>Информация для доставки заказа:</h2>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <span style="color: red;">*</span>
+                                {{ form.second_name.label_tag }}
+                                {{ form.second_name }}
+                                {% for error in form.second_name.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4">
+                                <span style="color: red;">*</span>
+                                {{ form.first_name.label_tag }}
+                                {{ form.first_name }}
+                                {% for error in form.first_name.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4">
+                                <span style="color: red;">*</span>
+                                {{ form.middle_name.label_tag }}
+                                {{ form.middle_name }}
+                                {% for error in form.middle_name.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <span style="color: red;">*</span>
+                                {{ form.email.label_tag }}
+                                {{ form.email }}
+                                {% for error in form.email.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <span style="color: red;">*</span>
+                                {{ form.phone_number.label_tag }}
+                                {{ form.phone_number }}
+                                {% for error in form.phone_number.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <span style="color: red;">*</span>
+                                {{ form.region.label_tag }}
+                                {{ form.region }}
+                                {% for error in form.region.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <span style="color: red;">*</span>
+                                {{ form.locality.label_tag }}
+                                {{ form.locality }}
+                                {% for error in form.locality.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12">
+                                <span style="color: red;">*</span>
+                                {{ form.post_office.label_tag }}
+                                {{ form.post_office }}
+                                {% for error in form.post_office.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12">
+                                {{ form.comment.label_tag }}
+                                {{ form.comment }}
+                                {% for error in form.comment.errors %}
+                                    <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="checkout-inner">
+                    <div class="checkout-payment">
+                        <div class="payment-methods">
+                            <h1>Способы оплаты</h1>
+                            {% for radio in form.payment_method %}
+                                <div class="payment-method">
+                                    <div class="custom-control custom-radio">
+                                        {{ radio.tag }}
+                                        <label class="custom-control-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                        {% for error in radio.errors %}
+                                            <p class="text-center" style="color: red; font-size: 14px;">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="checkout-btn">
+                            <button type="submit" form="checkout-form">Сделать заказ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Checkout End -->
+{% endblock content %}

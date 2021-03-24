@@ -1,0 +1,218 @@
+.product-item .product-image-my {
+    position: relative;
+    overflow: hidden;
+}
+.product-item .product-image-my a {
+    display: block;
+    background: #ffffff;
+    transition: .3s;
+}
+
+.product-item .product-image-my img {
+    width: 100%;
+    transition: all .3s;
+}
+
+.product-item:hover .product-image-my img {
+    transform: scale(1.2);
+}
+
+
+.box select {
+  background-color: #ffffff;
+  color: #FF6F61;
+  height: 35px;
+  padding: 0 15px;
+  width: 250px;
+  border: 1px solid #FF6F61;
+  border-radius: 4px;
+  font-size: 16px;
+  -webkit-appearance: button;
+  appearance: button;
+  outline: none;
+}
+
+.box select option {
+  padding: 30px;
+}
+
+.checked{
+    color: red;
+}
+
+
+.wrap {
+	width: 250px;
+	height: 50px;
+	background: #fff;
+	position: relative;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	border-radius: 10px;
+}
+.stars {
+	width: fit-content;
+	margin: 0 auto;
+	cursor: pointer;
+}
+.star {
+	color: #FF6F61 !important;
+}
+.rate {
+	height: 50px;
+	margin-left: -5px;
+	padding: 5px;
+	font-size: 25px;
+	position: relative;
+	cursor: pointer;
+}
+.rate input[type="radio"] {
+	opacity: 0;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,0%);
+	pointer-events: none;
+}
+.star-over::after {
+	font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+	font-size: 16px;
+	content: "\f005";
+	display: inline-block;
+	color: #FBCEB5;
+	z-index: 1;
+	position: absolute;
+	top: 17px;
+	left: 10px;
+}
+
+.rate:nth-child(1) .face::after {
+	content: "\f119"; /* ☹ */
+}
+.rate:nth-child(2) .face::after {
+	content: "\f11a"; /* 😐 */
+}
+.rate:nth-child(3) .face::after {
+	content: "\f118"; /* 🙂 */
+}
+.rate:nth-child(4) .face::after {
+	content: "\f580"; /* 😊 */
+}
+.rate:nth-child(5) .face::after {
+	content: "\f59a"; /* 😄 */
+}
+.face {
+	opacity: 0;
+	position: absolute;
+	width: 35px;
+	height: 35px;
+	background: #FF6F61;
+	border-radius: 5px;
+	top: -50px;
+	left: 2px;
+	transition: 0.2s;
+	pointer-events: none;
+}
+.face::before {
+	font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+	content: "\f0dd";
+	display: inline-block;
+	color: #FF6F61;
+	z-index: 1;
+	position: absolute;
+	left: 9px;
+	bottom: -15px;
+}
+.face::after {
+	font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+	display: inline-block;
+	color: #fff;
+	z-index: 1;
+	position: absolute;
+	left: 5px;
+	top: -1px;
+}
+
+.rate:hover .face {
+	opacity: 1;
+}
+
+.slick-slide {
+    width: 200px;
+}
+
+/* Not sure if I like this or not. */
+/* Makes the emoji stay displayed */
+/* input[type="radio"]:checked + .face {
+	opacity: 1 !important;
+} */
+
+.reviews-submitted {
+    padding: 0px 0px 0px 10px;
+}
+
+
+
+.cart-page .cart-btn button {
+    margin-top: 15px;
+    width: calc(50% - 15px);
+    height: 50px;
+    padding: 2px 10px;
+    text-align: center;
+    color: #ffffff;
+    background: #FF6F61;
+    border: none;
+    border-radius: 4px;
+}
+
+.cart-page .cart-btn button:hover {
+    color: #FF6F61;
+    background: #000000;
+}
+
+.cart-page .cart-btn button:first-child {
+    margin-right: 25px;
+    color: #FF6F61;
+    background: #ffffff;
+    border: 1px solid #FF6F61;
+}
+
+.cart-page .cart-btn button:first-child:hover {
+    color: #ffffff;
+    background: #FF6F61;
+}
+
+.product-sort select{
+    display: block;
+    width: 100%;
+    height: 35px;
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px solid #353535;
+    text-align: left;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.product-sort select:hover{
+    color: #FF6F61;
+    border-color: #FF6F61;
+}
+
+.product-price-range input[type=text]{
+    display: inline;
+    width: 100%;
+    height: 35px;
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px solid #353535;
+    text-align: left;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .3s;
+}

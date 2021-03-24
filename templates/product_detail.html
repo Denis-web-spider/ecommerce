@@ -1,0 +1,462 @@
+{% extends 'base.html' %}
+
+{% load category_list_tags %}
+{% load measurements %}
+
+{% block title %}{{ current_product.title }}{% endblock title %}
+
+{% block content %}
+
+        {% if messages %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8 offset-md-2 text-center">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.level_tag }} alert-dismissible fade show" role="alert">
+                                {{ message.message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="breadcrumb-wrap">
+            <div class="container-fluid">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+                    <li class="breadcrumb-item"><a href="{{ current_category.get_absolute_url }}">{{ current_category.title }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ current_subcategory.get_absolute_url }}">{{ current_subcategory.title }}</a></li>
+                    <li class="breadcrumb-item active">{{ current_product.title }}</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Product Detail Start -->
+        <div class="product-detail">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="product-detail-top">
+                            <div class="row align-items-center">
+                                <div class="col-md-5">
+                                    <div class="product-slider-single normal-slider">
+                                        {% for image in current_product.images %}
+                                            <img src="{{ image.image.url }}" alt="{{ image.title }}">
+                                        {% endfor %}
+                                    </div>
+                                    <div class="product-slider-single-nav normal-slider">
+                                        {% for image in current_product.images %}
+                                            <div class="slider-nav-img"><img src="{{ image.image.url }}" alt="{{ image.title }}"></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="product-content">
+                                        <div class="title"><h2>{{ current_product.title }}</h2></div>
+                                        <div class="ratting">
+                                            {% if current_product_rating != 0 %}
+                                                <i class="{% if current_product_rating >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                <i class="{% if current_product_rating >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                <i class="{% if current_product_rating >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                <i class="{% if current_product_rating >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                <i class="{% if current_product_rating >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                             {% endif %}
+                                        </div>
+                                        <div class="price">
+                                            <h4>Цена:</h4>
+                                            <p>{{ current_product.price }} грн.</p>
+                                        </div>
+
+                                        <form action="{% url 'product_detail' current_category.slug current_subcategory.slug current_product.id %}" id="add_to_cart_form" method="post">{% csrf_token %}</form>
+
+                                        <div class="quantity">
+                                            <h4>{{ form.quantity.label }}:</h4>
+                                            <div class="qty">
+                                                <button class="btn-minus"><i class="fa fa-minus"></i></button>
+                                                {{ form.quantity }}
+                                                <button class="btn-plus"><i class="fa fa-plus"></i></button>
+                                            </div>
+                                        </div>
+                                        {% for error in form.quantity.errors %}
+                                            <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
+                                        {% endfor %}
+                                        {% if current_product.size_specifications %}
+                                            <div class="p-size">
+                                                <h4>{{ form.size.label }}:</h4>
+                                                <div class="btn-group btn-group-sm">
+                                                    <div class="box" style="width: 200px;">
+                                                        {{ form.size }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% for error in form.size.errors %}
+                                            <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
+                                        {% endfor %}
+                                        {% endif %}
+                                        {% if current_product.color_specifications %}
+                                            <div class="p-color">
+                                                <h4>{{ form.color.label }}:</h4>
+                                                <div class="btn-group btn-group-sm">
+                                                    <div class="box" style="width: 200px;">
+                                                        {{ form.color }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% for error in form.color.errors %}
+                                            <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
+                                        {% endfor %}
+                                        {% endif %}
+                                        {{ form.product_id }}
+                                        <div class="action">
+                                            <button type="submit" class="btn" form="add_to_cart_form"><i class="fa fa-shopping-cart"></i> Добавить в корзину</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row product-detail-bottom">
+                            <div class="col-lg-12">
+                                <ul class="nav nav-pills nav-justified">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="pill" href="#description">Описание</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="pill" href="#specification">Характеристики</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="pill" href="#measurement">Замеры изделия</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="pill" href="#reviews">Отзывы ({{ current_product.reviews.count }})</a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div id="description" class="container tab-pane active">
+                                        <h4>Описание продукта</h4>
+                                        <p>
+                                            {{ current_product.description }}
+                                        </p>
+                                    </div>
+                                    <div id="specification" class="container tab-pane fade">
+                                        <h4>Харкактеристики</h4>
+                                        <table class="table">
+                                            <tbody>
+                                                {% for specification in current_product.specifications.all %}
+                                                    {% if specification.key != 'Цвет' and specification.key != 'Размер' %}
+                                                        <tr>
+                                                            <th scope="row">{{ specification.key }}</th>
+                                                            <td>{{ specification.value|capfirst }}</td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="measurement" class="container tab-pane fade">
+                                        <h4>Замеры изделия</h4>
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col"></th>
+                                                    {% for measurement_header in current_product.measurements.first.value|measurement_headers %}
+                                                        <th scope="col">{{ measurement_header }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for measurement in current_product.measurements.all %}
+                                                    <tr>
+                                                        <th scope="row">{{ measurement.key|cut:'(см)' }}</th>
+                                                        {% for value in measurement.value|measurement_values %}
+                                                            <td>{{ value }}</td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="reviews" class="container tab-pane fade">
+                                        {% for review in reviews %}
+                                            {% if user == review.user %}
+                                                <div class="reviews-submitted" style="background-color: #FFE0BC;">
+                                                    <div class="text-right">
+                                                        <button type="button" data-toggle="modal" data-target="#edit_review_modal" class="btn btn-outline-danger"><i class="fas fa-pen-square fa-lg"></i></button>
+                                                        <button type="button" data-toggle="modal" data-target="#delete_review_modal" class="btn btn-outline-danger"><i class="far fa-trash-alt"></i></button>
+                                                    </div>
+
+                                                    <div class="modal fade" id="delete_review_modal" tabindex="-1" role="dialog" aria-labelledby="delete_review_modal_label" aria-hidden="true">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title text-center" id="delete_review_modal_label">Вы уверены, что хотите удалить отзыв?</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="reviewer">{{ review.user.first_name }} {{ review.user.last_name }} - <span>{{ review.created_at }}</span></div>
+                                                                    <div class="ratting">
+                                                                        <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                        <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                        <i class="{% if review.ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                        <i class="{% if review.ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                        <i class="{% if review.ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                    </div>
+                                                                    <p>
+                                                                        {{ review.review }}
+                                                                    </p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Назад</button>
+                                                                    <form action="{% url 'delete_review' %}?redirect={% url 'product_detail' current_category.slug current_subcategory.slug current_product.id %}" method="post">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                                                                        <button type="submit" class="btn btn-primary">Удалить</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal fade" id="edit_review_modal" tabindex="-1" role="dialog" aria-labelledby="edit_review_modal_label" aria-hidden="true">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title text-center" id="edit_review_modal_label">Отредактируйте Ваш отзыв</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <h4 class="text-center">Старый отзыв</h4>
+                                                                    <div class="reviewer">{{ review.user.first_name }} {{ review.user.last_name }} - <span>{{ review.created_at }}</span></div>
+                                                                    <div class="ratting">
+                                                                        <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                        <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                        <i class="{% if review.ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                        <i class="{% if review.ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                        <i class="{% if review.ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                                    </div>
+                                                                    <p>
+                                                                        {{ review.review }}
+                                                                    </p>
+                                                                    <hr>
+                                                                    <h4 class="text-center">Новый отзыв</h4>
+                                                                    <form action="{% url 'review' %}?redirect={% url 'product_detail' current_category.slug current_subcategory.slug current_product.id %}" method="post" class="reviews-submit">
+                                                                        {% csrf_token %}
+                                                                            <div class="row form">
+                                                                                <div class="ratting">
+                                                                                    <div class="wrap">
+                                                                                        <div class="stars">
+                                                                                            <label class="rate">
+                                                                                                <input type="radio" name="ratting" id="star11" value="1">
+                                                                                                <div class="face"></div>
+                                                                                                <i class="far fa-star star one-star"></i>
+                                                                                            </label>
+                                                                                            <label class="rate">
+                                                                                                <input type="radio" name="ratting" id="star22" value="2">
+                                                                                                <div class="face"></div>
+                                                                                                <i class="far fa-star star two-star"></i>
+                                                                                            </label>
+                                                                                            <label class="rate">
+                                                                                                <input type="radio" name="ratting" id="star33" value="3">
+                                                                                                <div class="face"></div>
+                                                                                                <i class="far fa-star star three-star"></i>
+                                                                                            </label>
+                                                                                            <label class="rate">
+                                                                                                <input type="radio" name="ratting" id="star44" value="4">
+                                                                                                <div class="face"></div>
+                                                                                                <i class="far fa-star star four-star"></i>
+                                                                                            </label>
+                                                                                            <label class="rate">
+                                                                                                <input type="radio" name="ratting" id="star55" value="5">
+                                                                                                <div class="face"></div>
+                                                                                                <i class="far fa-star star five-star"></i>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-sm-12">
+                                                                                    <textarea placeholder="Отзыв" name="review"></textarea>
+                                                                                </div>
+                                                                                <div class="col-sm-12 text-center">
+                                                                                    <input type="hidden" name="product_id" value="{{ current_product.id }}">
+                                                                                    <input type="hidden" name="edit" value="True">
+                                                                                    <div class="modal-footer">
+                                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Назад</button>
+                                                                                        <button id="targett">Отправить</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                     </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="reviewer">{{ review.user.first_name }} {{ review.user.last_name }} - <span>{{ review.created_at }}</span></div>
+                                                    <div class="ratting">
+                                                        <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if review.ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if review.ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if review.ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                    </div>
+                                                    <p>
+                                                        {{ review.review }}
+                                                    </p>
+                                                </div>
+                                            {% else %}
+                                                <div class="reviews-submitted">
+                                                    <div class="reviewer">{{ review.user.first_name }} {{ review.user.last_name }} - <span>{{ review.created_at }}</span></div>
+                                                    <div class="ratting">
+                                                        <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if review.ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if review.ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if review.ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                    </div>
+                                                    <p>
+                                                        {{ review.review }}
+                                                    </p>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                            {% if user.is_authenticated %}
+                                            <form action="{% url 'review' %}?redirect={% url 'product_detail' current_category.slug current_subcategory.slug current_product.id %}" method="post" class="reviews-submit">
+                                                {% csrf_token %}
+                                                <h4>Оставьте отзыв:</h4>
+                                                    <div class="row form">
+                                                        <div class="ratting">
+                                                            <div class="wrap">
+                                                                <div class="stars">
+                                                                    <label class="rate">
+                                                                        <input type="radio" name="ratting" id="star1" value="1">
+                                                                        <div class="face"></div>
+                                                                        <i class="far fa-star star one-star"></i>
+                                                                    </label>
+                                                                    <label class="rate">
+                                                                        <input type="radio" name="ratting" id="star2" value="2">
+                                                                        <div class="face"></div>
+                                                                        <i class="far fa-star star two-star"></i>
+                                                                    </label>
+                                                                    <label class="rate">
+                                                                        <input type="radio" name="ratting" id="star3" value="3">
+                                                                        <div class="face"></div>
+                                                                        <i class="far fa-star star three-star"></i>
+                                                                    </label>
+                                                                    <label class="rate">
+                                                                        <input type="radio" name="ratting" id="star4" value="4">
+                                                                        <div class="face"></div>
+                                                                        <i class="far fa-star star four-star"></i>
+                                                                    </label>
+                                                                    <label class="rate">
+                                                                        <input type="radio" name="ratting" id="star5" value="5">
+                                                                        <div class="face"></div>
+                                                                        <i class="far fa-star star five-star"></i>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <textarea placeholder="Отзыв" name="review"></textarea>
+                                                        </div>
+                                                        <div class="col-sm-12 text-center">
+                                                            <input type="hidden" name="product_id" value="{{ current_product.id }}">
+                                                            <button id="target">Отправить</button>
+                                                        </div>
+                                                    </div>
+                                             </form>
+                                            {% else %}
+                                                <h4 style="color: red;">Отзывы могут оставить только зарегестрированные пользователи</h4>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% if related_products|length > 3 %}
+                            <div class="product">
+                                <div class="section-header">
+                                    <h1>Похожие товары</h1>
+                                </div>
+                                <div class="row align-items-center product-slider product-slider-3">
+                                    {% for product in related_products %}
+                                        <div class="col-lg-3">
+                                            <div class="product-item">
+                                                <div class="product-title">
+                                                    <a href="{{ product.get_absolute_url }}" style="font-size: 12px;">{{ product.title|remove_code_from_product_title }}</a>
+                                                    <div class="ratting">
+                                                        {% if product.rounded_ratting != 0 %}
+                                                            <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        {% else %}
+                                                            <br>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="product-image-my">
+                                                    <a href="{{ product.get_absolute_url }}">
+                                                        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                                                    </a>
+                                                </div>
+                                                <div class="product-price">
+                                                    <h3 style="font-size: 22px;">{{ product.price }}<span>грн.</span></h3>
+                                                    <a class="btn" href="{{ product.get_absolute_url }}"><i class="fa fa-search"></i>Подробнее</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                    {% endif %}
+                    </div>
+
+                    {% if related_products %}
+                        <!-- Side Bar Start -->
+                        <div class="col-lg-4 sidebar">
+                            <div class="sidebar-widget widget-slider">
+                                <div class="sidebar-slider normal-slider">
+                                    {% for product in related_products %}
+                                        <div class="product-item">
+                                            <div class="product-title">
+                                                <a href="{{ product.get_absolute_url }}" style="font-size: 16px;">{{ product.title|remove_code_from_product_title }}</a>
+                                                <div class="ratting">
+                                                    {% if product.rounded_ratting != 0 %}
+                                                        <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                    {% else %}
+                                                        <br>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="product-image-my">
+                                                <a href="{{ product.get_absolute_url }}">
+                                                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                                                </a>
+                                            </div>
+                                            <div class="product-price">
+                                                <h3>{{ product.price }}<span>грн.</span></h3>
+                                                <a class="btn" href="{{ product.get_absolute_url }}"><i class="fa fa-search"></i>Подробнее</a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Side Bar End -->
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Product Detail End -->
+{% endblock content %}

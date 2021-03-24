@@ -1,0 +1,4 @@
+*.env
+/media/csv/*
+/media/images/*
+ssh

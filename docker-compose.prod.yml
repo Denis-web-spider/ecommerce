@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: gunicorn ecommerce_project.wsgi -b 0.0.0.0:8000
+    env_file:
+      - production.env
+    volumes:
+      - .:/ecommerce
+    expose:
+      - 8000
+    depends_on:
+      - mysqldb
+  mysqldb:
+    image: mysql:5.7.22
+    restart: always
+    env_file:
+      - production.env
+    volumes:
+      - ./mysql:/var/lib/mysql
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    volumes:
+      - ./static:/static
+      - ./media:/mediafiles
+    depends_on:
+      - web

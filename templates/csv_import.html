@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Csv импорт{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 offset-md-4" style="margin-top: 100px; margin-bottom: 100px;">
+        <form action="{% url 'csv_import' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-success" value="Импортировать">
+        </form>
+    </div>
+</div>
+{% endblock content %}

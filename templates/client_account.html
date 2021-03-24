@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% load status %}
+
+{% block title %}Мой аккаунт{% endblock title %}
+
+{% block content %}
+
+{% if messages %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-center">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.level_tag }} alert-dismissible fade show" role="alert">
+                {{ message.message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+    <div class="container-fluid">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item active">Мой аккаунт</li>
+        </ul>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- My Account Start -->
+<div class="my-account">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="orders-nav" data-toggle="pill" href="#orders-tab" role="tab"><i class="fa fa-shopping-bag"></i>Заказы</a>
+                    <a class="nav-link" id="account-nav" data-toggle="pill" href="#account-tab" role="tab"><i class="fa fa-user"></i>Личные данные</a>
+                    <a class="nav-link" href="{% url 'password_change' %}"><i class="fas fa-key"></i>Сменить пароль</a>
+                    <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i>Выход</a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="orders-tab" role="tabpanel" aria-labelledby="orders-nav">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" style="font-size: 14px;">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Товары</th>
+                                    <th>Дата</th>
+                                    <th>Стоимость</th>
+                                    <th>Статус</th>
+                                    <th>Статус оплаты</th>
+                                    <th>Действие</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for order in orders %}
+                                    {% with items=order.cart.items.all current_cart=order.cart %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>
+                                                {% for item in items %}
+                                                    {{ item.product.title }} ({{ item.quantity }}, {{ item.size }}){% if not forloop.last %}<br>{% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            <td>{{ order.created_at|date:'d M Y' }}</td>
+                                            <td>{{ current_cart.total_price }}</td>
+                                            <td style="color: {{ order.status|status_color }};">{{ order.status|translate_status }}</td>
+                                            <td style="color: {{ order.payment_status|payment_status_color }};">{{ order.payment_status|translate_payment_status }}</td>
+                                            <td>
+                                                <form action="{% url 'client_order_detail' %}" method="get">
+                                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                                    <button class="btn" type="submit"><i class="fa fa-search"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endwith %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="account-tab" role="tabpanel" aria-labelledby="account-nav">
+                        <h4>Личные данные</h4>
+                        <div class="row">
+                            <form action="{% url 'client_account' %}" method="post" id="client_info_form">{% csrf_token %}</form>
+                            <div class="col-md-6">
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.last_name }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.phone_number }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.email }}
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn" type="submit" form="client_info_form">Обновить данные</button>
+                                <br><br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- My Account End -->
+{% endblock content %}

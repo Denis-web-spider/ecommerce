@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}E Store - eCommerce HTML Template{% endblock title %}</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="eCommerce HTML Template Free Download" name="keywords">
+        <meta content="eCommerce HTML Template Free Download" name="description">
+
+        <!-- Favicon -->
+        <link href="{% static 'img/dshop_icon.png' %}" rel="icon">
+
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400|Source+Code+Pro:700,900&display=swap" rel="stylesheet">
+
+        <!-- CSS Libraries -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+        <link href="{% static 'lib/slick/slick.css' %}" rel="stylesheet">
+        <link href="{% static 'lib/slick/slick-theme.css' %}" rel="stylesheet">
+
+        <!-- Template Stylesheet -->
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        <link href="{% static 'css/my.css' %}" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/120a07be29.js" crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+        <!-- Top bar Start -->
+        <div class="top-bar">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <i class="fa fa-envelope"></i>
+                        d.s.h.o.p.p.p.p.p.p@gmail.com
+                    </div>
+                    <div class="col-sm-6">
+                        <i class="fa fa-phone-alt"></i>
+                        +380674278265
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Top bar End -->
+
+        <!-- Nav Bar Start -->
+        <div class="nav">
+            <div class="container-fluid">
+                <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+                    <a href="#" class="navbar-brand">MENU</a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto">
+                            {% url 'home' as home_url %}
+                            {% url 'cart' as cart_url %}
+                            {% url 'client_account' as client_account_url %}
+                            {% url 'client_orders' as client_orders_url %}
+                            {% url 'csv_import' as csv_import_url %}
+                            {% url 'client_orders_for_admin' as client_orders_for_admin_url %}
+
+                            <a href="{{ home_url }}" class="nav-item nav-link {% if request.path == home_url %}active{% endif %}">Главная</a>
+                            <a href="{% url 'cart' %}" class="nav-item nav-link {% if request.path == cart_url %}active{% endif %}">Корзина</a>
+                            <a href="{% url 'client_account' %}" class="nav-item nav-link {% if request.path == client_account_url %}active{% endif %}">Мой аккаунт</a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'client_orders' %}" class="nav-item nav-link {% if request.path == client_orders_url %}active{% endif %}">Мои заказы</a>
+                            {% endif %}
+                            {% if user.is_superuser %}
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Для админа</a>
+                                    <div class="dropdown-menu">
+                                        <a href="{% url 'csv_import' %}" class="dropdown-item">Импорт csv</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="navbar-nav ml-auto" style="margin-right: 50px;">
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Аккаунт</a>
+                                <div class="dropdown-menu">
+                                    {% if not user.is_authenticated %}
+                                        <a href="{% url 'login' %}" class="dropdown-item">Войти</a>
+                                        <a href="{% url 'registration' %}" class="dropdown-item">Регистрация</a>
+                                    {% else %}
+                                        <a href="{% url 'password_change' %}" class="dropdown-item">Изменить пароль</a>
+                                        <hr>
+                                        <a href="{% url 'logout' %}" class="dropdown-item">Выход</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <!-- Nav Bar End -->
+
+        <!-- Bottom Bar Start -->
+        <div class="bottom-bar">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="logo">
+                            <a href="{% url 'home' %}">
+                                <img src="{% static 'img/dshop_logo.png' %}" alt="Logo">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="search">
+                            <form method="get" action="{% url 'search' %}">
+                                <input type="text" placeholder="Поиск" name="search_query">
+                                <button type="submit"><i class="fa fa-search"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="user">
+                            <a href="{% url 'cart' %}" class="btn cart">
+                                <i class="fa fa-shopping-cart"></i>
+                                <span>({{ cart.total_quantity }})</span>
+                                <span>({{ cart.total_price }}грн.)</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="text-center" style="color: red;">На данном сайте пока невозможно совершить покупку, приходите позже!</h1>
+            </div>
+        </div>
+        <!-- Bottom Bar End -->
+        {% block content %}
+        {% endblock content %}
+     <!-- Footer Start -->
+        <div class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-widget">
+                            <h2>Связаться с нами</h2>
+                            <div class="contact-info">
+                                <p><i class="fa fa-envelope"></i>d.s.h.o.p.p.p.p.p.p@gmail.com</p>
+                                <p><i class="fa fa-phone"></i>+380674278265</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-widget">
+                            <h2>Информация о компании</h2>
+                            <ul>
+                                <li><a href="{% url 'privacy_policy' %}">Политика конфиденциальности</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-widget">
+                            <h2>Дополнительная информация</h2>
+                            <ul>
+                                <li><a href="{% url 'payment_policy' %}">Информация об оплате</a></li>
+                                <li><a href="{% url 'shipping_policy' %}">Информация о доставке</a></li>
+                                <li><a href="{% url 'return_policy' %}">Возврат товара</a></li>
+                                <li><a href="{% url 'clothes_size' %}">Как подобрать размер одежды?</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row payment align-items-center">
+                    <div class="col-md-6">
+                        <div class="payment-method">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="payment-security">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+
+        <!-- Footer Bottom Start -->
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 copyright">
+                        <br>
+                    </div>
+
+                    <div class="col-md-6 template-by">
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer Bottom End -->
+
+        <!-- Back to Top -->
+        <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+        <script src="{% static 'lib/slick/slick.min.js' %}"></script>
+
+        <!-- Template Javascript -->
+        <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/my.js' %}"></script>
+
+        <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+        <script src="{% static 'lib/slick/slick.min.js' %}"></script>
+    </body>
+</html>
