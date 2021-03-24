@@ -1,5 +1,4 @@
 *.env
 /media/csv/*
 /media/images/*
-/mysql/*
 ssh
