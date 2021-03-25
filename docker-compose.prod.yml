@@ -27,5 +27,7 @@ services:
     volumes:
       - ./static:/static
       - ./media:/mediafiles
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/lib/letsencrypt:/var/lib/letsencrypt
     depends_on:
       - web
