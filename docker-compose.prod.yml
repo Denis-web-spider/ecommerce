@@ -29,5 +29,6 @@ services:
       - ./media:/mediafiles
       - /etc/letsencrypt:/etc/letsencrypt
       - /var/lib/letsencrypt:/var/lib/letsencrypt
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
     depends_on:
       - web
