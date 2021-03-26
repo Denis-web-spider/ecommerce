@@ -244,7 +244,7 @@ class Image(models.Model):
                 img_temp.flush()
                 self.image.save(f"image_{self.id}.jpeg", File(img_temp))
             except:
-                traceback.print_exception()
+                traceback.print_exc()
         super(Image, self).save(*args, **kwargs)
 
     def __str__(self):
