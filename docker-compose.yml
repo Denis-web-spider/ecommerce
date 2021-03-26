@@ -5,7 +5,7 @@ services:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     env_file:
-      - production.env
+      - .env
     volumes:
       - .:/ecommerce
     ports:
@@ -18,7 +18,7 @@ services:
     ports:
       - 3307:3306
     env_file:
-      - production.env
+      - .env
     volumes:
       - ./mysql:/var/lib/mysql
     command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']

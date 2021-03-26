@@ -13,6 +13,9 @@ from .forms import ProductForm, SearchForm, populate_form_choice_fields, ReturnL
 from cart.views import get_cart
 from cart.models import CartItem
 
+
+import traceback
+
 SORT_CHOICES = [
         ('-ratting', 'По умолчанию'),
         ('title', 'Наименование (А -> Я)'),

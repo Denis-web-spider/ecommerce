@@ -22,6 +22,8 @@ from mainapp.models import (
     ProductMeasurements
 )
 
+import traceback
+
 class CsvImportView(View):
 
     def get(self, request):
@@ -51,7 +53,7 @@ class CsvImportView(View):
                     for row in reader:
                         category, created = Category.objects.get_or_create(title=row['Категория'])
                         subcategory, created = SubCategory.objects.get_or_create(category=category, title=row['Подкатегория'])
-                        product, created = Product.objects.get_or_create(category=subcategory, title=row['Название'], description=row['Описание'], true_price=row['Цена'])
+                        product, created = Product.objects.get_or_create(category=subcategory, title=row['Название'], description=row['Описание'], true_price=int(row['Цена']))
                         product.updated_at = timezone.now()
                         product.in_stock = True
                         product.save()
