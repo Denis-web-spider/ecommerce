@@ -12,13 +12,18 @@ import uuid
 
 import traceback
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 UserModel = get_user_model()
 
 session = requests.Session()
-adapter = requests.adapters.HTTPAdapter(
-    max_retries=5
-)
+retries = Retry(total=5,
+                backoff_factor=2,
+                status_forcelist=[500, 502, 503, 504]
+                )
+session.mount('http://', HTTPAdapter(max_retries=retries))
+session.mount('https://', HTTPAdapter(max_retries=retries))
 
 class Category(models.Model):
     title = models.CharField(max_length=255, verbose_name='Категория товара')
