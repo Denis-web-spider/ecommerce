@@ -12,6 +12,7 @@ django-mysql = "*"
 pillow = "*"
 django-crispy-forms = "*"
 gunicorn = "*"
+requests = "*"
 
 [requires]
 python_version = "3.9"

@@ -11,9 +11,14 @@ from tempfile import NamedTemporaryFile
 import uuid
 
 import traceback
+import requests
 
 UserModel = get_user_model()
 
+session = requests.Session()
+adapter = requests.adapters.HTTPAdapter(
+    max_retries=5
+)
 
 class Category(models.Model):
     title = models.CharField(max_length=255, verbose_name='Категория товара')
@@ -240,12 +245,12 @@ class Image(models.Model):
         if self.image_url and not self.image:
             try:
                 img_temp = NamedTemporaryFile(delete=True)
-                img_temp.write(urlopen(self.image_url).read())
+                img_temp.write(session.get(self.image_url).content)
                 img_temp.flush()
                 self.image.save(f"image_{self.id}.jpeg", File(img_temp))
+                super(Image, self).save(*args, **kwargs)
             except:
                 traceback.print_exc()
-        super(Image, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'Изображение для {self.product.title}'
