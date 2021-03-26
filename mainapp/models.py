@@ -10,6 +10,8 @@ from tempfile import NamedTemporaryFile
 
 import uuid
 
+import traceback
+
 UserModel = get_user_model()
 
 
@@ -236,10 +238,13 @@ class Image(models.Model):
 
     def save(self, *args, **kwargs):
         if self.image_url and not self.image:
-            img_temp = NamedTemporaryFile(delete=True)
-            img_temp.write(urlopen(self.image_url).read())
-            img_temp.flush()
-            self.image.save(f"image_{self.id}.jpeg", File(img_temp))
+            try:
+                img_temp = NamedTemporaryFile(delete=True)
+                img_temp.write(urlopen(self.image_url).read())
+                img_temp.flush()
+                self.image.save(f"image_{self.id}.jpeg", File(img_temp))
+            except:
+                traceback.print_exception()
         super(Image, self).save(*args, **kwargs)
 
     def __str__(self):
