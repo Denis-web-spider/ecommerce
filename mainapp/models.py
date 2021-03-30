@@ -5,7 +5,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 
 from django.core.files import File
-from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
 
 import uuid
@@ -24,6 +23,22 @@ retries = Retry(total=5,
                 )
 session.mount('http://', HTTPAdapter(max_retries=retries))
 session.mount('https://', HTTPAdapter(max_retries=retries))
+
+headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Accept-Encoding': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Cache-Control': 'no-cache',
+    'Cookie': "_ga=GA1.2.1988127041.1614534506; _fbp=fb.1.1614534511008.1455577828; shipping_method=novaposhta.novaposhta; payment_method=liqpay; language=ru; currency=UAH; PHPSESSID=1hjcsnevtboifbaenm0r12hp07; _gid=GA1.2.1445165545.1617120854; biatv-cookie={%22firstVisitAt%22:1613420799%2C%22visitsCount%22:41%2C%22campaignCount%22:5%2C%22currentVisitStartedAt%22:1617120850%2C%22currentVisitLandingPage%22:%22https://timeofstyle.com/muzhskaya-odezhda-1/%22%2C%22currentVisitOpenPages%22:2%2C%22location%22:%22https://timeofstyle.com/futbolka-s-nadpisyu-na-grudi-85f395.html%22%2C%22userAgent%22:%22Mozilla/5.0%20(Windows%20NT%2010.0%3B%20Win64%3B%20x64)%20AppleWebKit/537.36%20(KHTML%2C%20like%20Gecko)%20Chrome/89.0.4389.90%20Safari/537.36%22%2C%22language%22:%22ru-ru%22%2C%22encoding%22:%22utf-8%22%2C%22screenResolution%22:%221536x864%22%2C%22currentVisitUpdatedAt%22:1617120875%2C%22utmDataCurrent%22:{%22utm_source%22:%22www.liqpay.ua%22%2C%22utm_medium%22:%22referral%22%2C%22utm_campaign%22:%22(referral)%22%2C%22utm_content%22:%22/%22%2C%22utm_term%22:%22(not%20set)%22%2C%22beginning_at%22:1615487167}%2C%22campaignTime%22:1615487167%2C%22utmDataFirst%22:{%22utm_source%22:%22google%22%2C%22utm_medium%22:%22organic%22%2C%22utm_campaign%22:%22(not%20set)%22%2C%22utm_content%22:%22(not%20set)%22%2C%22utm_term%22:%22(not%20provided)%22%2C%22beginning_at%22:1613420799}%2C%22geoipData%22:{%22country%22:%22Ukraine%22%2C%22region%22:%22Kirovohrads'ka%20Oblast'%22%2C%22city%22:%22Kirovograd%22%2C%22org%22:%22PJSC%20Ukrtelecom%22}}; __atuvc=7%7C9%2C9%7C10%2C6%7C11%2C1%7C12%2C1%7C13; __atuvs=60634e6c15eadcbd000; bingc-activity-data={%22numberOfImpressions%22:0%2C%22activeFormSinceLastDisplayed%22:0%2C%22pageviews%22:1%2C%22callWasMade%22:0%2C%22updatedAt%22:1617120901}",
+    'DNT': '1',
+    'Host': 'timeofstyle.com',
+    'Pragma': 'no-cache',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-User': '?1',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
+}
 
 class Category(models.Model):
     title = models.CharField(max_length=255, verbose_name='Категория товара')
@@ -250,7 +265,7 @@ class Image(models.Model):
         if self.image_url and not self.image:
             try:
                 img_temp = NamedTemporaryFile(delete=True)
-                img_temp.write(session.get(self.image_url).content)
+                img_temp.write(session.get(self.image_url, headers=headers).content)
                 img_temp.flush()
                 self.image.save(f"image_{self.id}.jpeg", File(img_temp))
                 super(Image, self).save(*args, **kwargs)
