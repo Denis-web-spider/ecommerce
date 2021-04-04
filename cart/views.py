@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,7 +12,8 @@ from django.views.generic import View
 from .models import Cart, Order
 from .forms import OrderForm, SearchForm
 
-from copy import deepcopy
+from liqpay import LiqPay
+
 
 def get_cart(request):
     if request.user.is_authenticated:
@@ -133,7 +134,7 @@ class CheckoutView(LoginRequiredMixin, View):
                 html_message=html_message
             )
 
-            return HttpResponseRedirect(reverse('client_orders'))
+            return HttpResponseRedirect(reverse('client_order_detail') + f'?order_id={order.id}')
         return render(request, 'checkout.html', context)
 
     def get_message_and_html_message_for_email(self, order):
@@ -255,7 +256,38 @@ class ClientOrderDetail(LoginRequiredMixin, View):
         order_id = request.GET['order_id']
         order = Order.objects.get(id=order_id)
 
+        liqpay = LiqPay(settings.LIQPAY_PUBLIC_KEY, settings.LIQPAY_PRIVATE_KEY)
+        params = {
+            'action': 'pay',
+            'amount': f'{order.cart.total_price}',
+            'currency': 'UAH',
+            'description': 'Оплата одежды',
+            'order_id': f'{order.id}',
+            'version': '3',
+            'result_url': f'https://{settings.SHOP_DOMAIN_NAME}{reverse("client_orders")}',
+            'server_url': f'https://{settings.SHOP_DOMAIN_NAME}{reverse("payment_result")}', # url to callback view
+        }
+        payment_form = liqpay.cnb_form(params)
+
         context['order'] = order
         context['cart'] = cart
+        context['payment_form'] = payment_form
 
         return render(request, 'client_order_detail.html', context)
+
+class PaymentResultView(View):
+
+    def post(self, request, *args, **kwargs):
+        liqpay = LiqPay(settings.LIQPAY_PUBLIC_KEY, settings.LIQPAY_PRIVATE_KEY)
+        data = request.POST.get('data')
+        signature = request.POST.get('signature')
+        sign = liqpay.str_to_sign(settings.LIQPAY_PRIVATE_KEY + data + settings.LIQPAY_PRIVATE_KEY)
+        if sign == signature:
+            print('==' * 100)
+            print('callback is valid')
+            print('==' * 100)
+        response = liqpay.decode_data_from_str(data)
+        print('==' * 100)
+        print('callback data', response)
+        print('==' * 100)
+        return HttpResponse()

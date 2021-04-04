@@ -30,6 +30,9 @@ DEBUG = int(os.getenv('DEBUG'))
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split()
 
+LIQPAY_PUBLIC_KEY = os.getenv('LIQPAY_PUBLIC_KEY')
+LIQPAY_PRIVATE_KEY = os.getenv('LIQPAY_PRIVATE_KEY')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

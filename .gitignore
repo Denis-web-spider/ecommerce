@@ -2,3 +2,5 @@
 /media/csv/*
 /media/images/*
 ssh
+mysql
+media
