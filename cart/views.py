@@ -13,6 +13,8 @@ from .models import Cart, Order
 from .forms import OrderForm, SearchForm
 
 from liqpay import LiqPay
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 
 def get_cart(request):
@@ -275,6 +277,7 @@ class ClientOrderDetail(LoginRequiredMixin, View):
 
         return render(request, 'client_order_detail.html', context)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class PaymentResultView(View):
 
     def post(self, request, *args, **kwargs):
