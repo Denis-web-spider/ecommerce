@@ -145,7 +145,7 @@ class CheckoutView(LoginRequiredMixin, View):
             f"""
             Номер заказа: {order.id}
             
-            ФИО: {order.second_name} {order.first_name}
+            ФИО: {order.second_name} {order.first_name} {order.middle_name}
             
             Номер телефона: {order.phone_number}
             
@@ -163,7 +163,7 @@ class CheckoutView(LoginRequiredMixin, View):
             f"""
             <p>Номер заказа: {order.id}</p>
             <br>
-            <p>ФИО: {order.second_name} {order.first_name}</p>
+            <p>ФИО: {order.second_name} {order.first_name} {order.middle_name}</p>
             <br>
             <p>Номер телефона: {order.phone_number}</p>
             <br>
@@ -208,12 +208,18 @@ class CheckoutView(LoginRequiredMixin, View):
             )
 
         message += f'\nВсего товара в корзине {order.cart.total_quantity}, общая сумма {order.cart.total_price}грн.'
+        message += f'''\n\nДля оплаты заказа перейдите в "Мой аккаунт", "Заказы" и нажмите на лупу в столбце "Действие".
+                        Под карточкой товара вы найдётё зёлёную кнопку "Оплатить". Нажмите на нёё.'''
         html_message += (
             f"""
                 </tbody>
             </table>
             <br>
             <p>Всего товара в корзине {order.cart.total_quantity}, общая сумма {order.cart.total_price}грн.</p>
+            <p>
+                Для оплаты заказа перейдите в "Мой аккаунт", "Заказы" и нажмите на лупу в столбце "Действие".
+                Под карточкой товара вы найдётё зёлёную кнопку "Оплатить". Нажмите на нёё.
+            </p>
             """
         )
         return message, html_message
@@ -286,11 +292,113 @@ class PaymentResultView(View):
         signature = request.POST.get('signature')
         sign = liqpay.str_to_sign(settings.LIQPAY_PRIVATE_KEY + data + settings.LIQPAY_PRIVATE_KEY)
         if sign == signature:
-            print('==' * 100)
             print('callback is valid')
-            print('==' * 100)
-        response = liqpay.decode_data_from_str(data)
-        print('==' * 100)
-        print('callback data', response)
-        print('==' * 100)
+            response = liqpay.decode_data_from_str(data)
+            order = Order.objects.get(id=response['order_id'])
+            response_status = response['status']
+            if response_status == 'success':
+                order.payment_status = True
+                order.save()
+                self.send_success_payment_mail(order)
+            if response_status == 'error':
+                self.send_error_payment_mail(order)
+            if response_status == 'failure':
+                self.send_failure_payment_mail(order)
+            if response_status == 'reversed':
+                self.send_reversed_payment_mail(order)
         return HttpResponse()
+
+    def send_success_payment_mail(self, order):
+        client_email = order.email
+        order_id = order.id
+        client_first_name = order.first_name
+        client_middle_name = order.middle_name
+        client_second_name = order.second_name
+
+        message = (
+            f'''
+            Уважаемый, {client_second_name} {client_first_name} {client_middle_name}.
+
+            Статус заказа №{order_id} изменен на "Оплачено".
+            '''
+        )
+
+        send_mail(
+            subject=f'Стату заказа изменён на "Оплачено"',
+            from_email=None,
+            recipient_list=[client_email],
+            message=message,
+            )
+
+    def send_error_payment_mail(self, order):
+        client_email = order.email
+        order_id = order.id
+        client_first_name = order.first_name
+        client_middle_name = order.middle_name
+        client_second_name = order.second_name
+
+        message = (
+            f'''
+            Уважаемый, {client_second_name} {client_first_name} {client_middle_name}.
+
+            Статус заказа №{order_id} не был изменён.
+
+            Неуспешный платеж. Некорректно заполнены данные при оплате товара.
+            '''
+        )
+
+        send_mail(
+            subject=f'Неуспешный платеж. Некорректно заполнены данные',
+            from_email=None,
+            recipient_list=[client_email],
+            message=message,
+            )
+
+    def send_failure_payment_mail(self, order):
+        client_email = order.email
+        order_id = order.id
+        client_first_name = order.first_name
+        client_middle_name = order.middle_name
+        client_second_name = order.second_name
+
+        message = (
+            f'''
+            Уважаемый, {client_second_name} {client_first_name} {client_middle_name}.
+
+            Статус заказа №{order_id} не был изменён.
+
+            Неуспешный платеж.
+            '''
+        )
+
+        send_mail(
+            subject=f'Неуспешный платеж.',
+            from_email=None,
+            recipient_list=[client_email],
+            message=message,
+            )
+
+    def send_reversed_payment_mail(self, order):
+        client_email = order.email
+        order_id = order.id
+        client_first_name = order.first_name
+        client_middle_name = order.middle_name
+        client_second_name = order.second_name
+
+        message = (
+            f'''
+            Уважаемый, {client_second_name} {client_first_name} {client_middle_name}.
+
+            Статус заказа №{order_id} не был изменён.
+
+            Платеж возвращен.
+            '''
+        )
+
+        send_mail(
+            subject=f'Платеж возвращен.',
+            from_email=None,
+            recipient_list=[client_email],
+            message=message,
+            )
+
