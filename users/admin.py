@@ -13,13 +13,13 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
-    list_display = ['email', 'phone_number', 'first_name', 'last_name', 'is_staff']
-    list_display_links = ['email', 'phone_number', 'first_name', 'last_name', 'is_staff']
-    search_fields = ['email', 'phone_number', 'first_name', 'last_name']
+    list_display = ['email', 'is_staff']
+    list_display_links = ['email', 'is_staff']
+    search_fields = ['email']
     list_filter = ['is_staff']
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'phone_number')}),
+        (_('Personal info'), {'fields': ('email', )}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),

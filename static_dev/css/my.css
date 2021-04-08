@@ -216,3 +216,16 @@
     cursor: pointer;
     transition: all .3s;
 }
+
+.info-container {
+    background-color: white;
+    margin-top: 15px;
+}
+
+.info-container p {
+    margin: 10px 10px 10px 10px;
+}
+
+.info-container h1 {
+    margin-top: 15px;
+}

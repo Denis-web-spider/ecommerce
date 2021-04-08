@@ -496,3 +496,13 @@ class ClothesSizeView(View):
         context['cart'] = cart
 
         return render(request, 'information/clothes_size.html', context)
+
+class OfferPolicyView(View):
+
+    def get(self, request):
+        context = {}
+        cart = get_cart(request)
+        context['cart'] = cart
+        context['shop_domain_name'] = settings.SHOP_DOMAIN_NAME
+
+        return render(request, 'information/offer_policy.html', context)

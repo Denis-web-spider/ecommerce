@@ -32,9 +32,6 @@ class CustomManager(BaseUserManager):
 
 class CustomUser(AbstractUser):
 
-    phone_number = models.CharField(max_length=20, verbose_name='Номер телефона')
-    first_name = models.CharField(max_length=150, verbose_name='Имя')
-    last_name = models.CharField(max_length=150, verbose_name='Фамилия')
     email = models.EmailField(unique=True, verbose_name='Электронная почта')
     username = models.CharField(
         _('username'),

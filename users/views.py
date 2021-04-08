@@ -57,17 +57,11 @@ class RegistrationView(View):
     def post(self, request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
             password = form.cleaned_data['password1']
             email = form.cleaned_data['email']
-            phone_number = form.cleaned_data['phone_number']
 
             new_user = CustomUser.objects.create_user(
-                first_name=first_name,
-                last_name=last_name,
                 email=email,
-                phone_number=phone_number,
                 password=password
             )
             new_user.save()
@@ -94,9 +88,6 @@ class ClientAccountView(LoginRequiredMixin, View):
         orders = Order.objects.filter(cart__owner=user).order_by('-created_at')
         form = AccountDetailForm(
             initial={
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'phone_number': user.phone_number,
                 'email': user.email
             }
         )
@@ -113,9 +104,6 @@ class ClientAccountView(LoginRequiredMixin, View):
 
         form = AccountDetailForm(request.POST)
         if form.is_valid():
-            user.first_name = form.cleaned_data['first_name']
-            user.last_name = form.cleaned_data['last_name']
-            user.phone_number = form.cleaned_data['phone_number']
             user.email = form.cleaned_data['email']
             user.save()
             messages.info(request, 'Ваши личные данные успешно изменены')

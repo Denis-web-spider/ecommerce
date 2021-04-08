@@ -15,6 +15,7 @@ from .views import (
     ReturnLetterView,
     PrivacyPolicyView,
     ClothesSizeView,
+    OfferPolicyView,
 )
 
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
     path('return_letter/', ReturnLetterView.as_view(), name='return_letter'),
     path('privacy_policy/', PrivacyPolicyView.as_view(), name='privacy_policy'),
     path('clothes_size/', ClothesSizeView.as_view(), name='clothes_size'),
+    path('offer_policy/', OfferPolicyView.as_view(), name='offer_policy'),
 
     path('product_review/', ProductReviewView.as_view(), name='review'),
     path('delete_review/', DeleteReviewView.as_view(), name='delete_review'),

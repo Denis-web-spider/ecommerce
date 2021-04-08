@@ -33,25 +33,12 @@ class RegistrationForm(ModelForm):
         self.fields['password1'].label = 'Пароль'
         self.fields['password2'].label = 'Подтвердите пароль'
         self.fields['email'].label = 'Электронная почта'
-        self.fields['phone_number'].widget.attrs.update(
-            {
-                'id': 'phone',
-                'data-mask': '+380 00 0000000',
-                'placeholder': '+38_ __ _______',
-            }
-        )
 
     def clean_email(self):
         email = self.cleaned_data['email']
         if CustomUser.objects.filter(email=email).exists():
             raise forms.ValidationError('Пользователь с данной электронной почтой уже зарегестрирован на сайте')
         return email
-
-    def clean_phone_number(self):
-        phone_number = self.cleaned_data['phone_number']
-        if len(phone_number) != 15:
-            raise ValidationError('Введено некорректное значение')
-        return phone_number
 
     def clean(self):
         password1 = self.cleaned_data['password1']
@@ -63,37 +50,11 @@ class RegistrationForm(ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'first_name', 'last_name', 'phone_number', 'password1', 'password2']
+        fields = ['email', 'password1', 'password2']
 
 class AccountDetailForm(Form):
-    first_name = forms.CharField(max_length=150, label='Имя')
-    last_name = forms.CharField(max_length=150, label='Фамилия')
-    phone_number = forms.CharField(max_length=20, label='Номер телефона')
     email = forms.EmailField(label='Электронная почта')
 
-    first_name.widget.attrs.update(
-        {
-            'class': 'form-control',
-            'placeholder': 'Имя',
-            'form': 'client_info_form',
-        }
-    )
-    last_name.widget.attrs.update(
-        {
-            'class': 'form-control',
-            'placeholder': 'Фамилия',
-            'form': 'client_info_form',
-        }
-    )
-    phone_number.widget.attrs.update(
-        {
-            'class': 'form-control',
-            'id': 'phone',
-            'data-mask': '+380 00 0000000',
-            'placeholder': '+38_ __ _______',
-            'form': 'client_info_form',
-        }
-    )
     email.widget.attrs.update(
         {
             'class': 'form-control',
@@ -102,8 +63,3 @@ class AccountDetailForm(Form):
         }
     )
 
-    def clean_phone_number(self):
-        phone_number = self.cleaned_data['phone_number']
-        if len(phone_number) != 15:
-            raise ValidationError('Введено некорректное значение')
-        return phone_number

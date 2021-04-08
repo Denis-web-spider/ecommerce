@@ -13,7 +13,7 @@ UserModel = get_user_model()
 class CartViewTests(TestCase):
 
     def setUp(self) -> None:
-        self.user = UserModel.objects.create(email='test@email.com', phone_number='+380674278265')
+        self.user = UserModel.objects.create(email='test@email.com')
         self.user.set_password('password')
         self.user.save()
         self.cart = Cart.objects.create(owner=self.user)
