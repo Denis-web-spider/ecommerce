@@ -506,3 +506,13 @@ class OfferPolicyView(View):
         context['shop_domain_name'] = settings.SHOP_DOMAIN_NAME
 
         return render(request, 'information/offer_policy.html', context)
+
+class AboutUsView(View):
+
+    def get(self, request):
+        context = {}
+        cart = get_cart(request)
+        context['cart'] = cart
+        context['shop_domain_name'] = settings.SHOP_DOMAIN_NAME
+
+        return render(request, 'information/about_us.html', context)

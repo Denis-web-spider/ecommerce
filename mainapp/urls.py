@@ -16,6 +16,7 @@ from .views import (
     PrivacyPolicyView,
     ClothesSizeView,
     OfferPolicyView,
+    AboutUsView,
 )
 
 urlpatterns = [
@@ -26,6 +27,7 @@ urlpatterns = [
     path('privacy_policy/', PrivacyPolicyView.as_view(), name='privacy_policy'),
     path('clothes_size/', ClothesSizeView.as_view(), name='clothes_size'),
     path('offer_policy/', OfferPolicyView.as_view(), name='offer_policy'),
+    path('about_us/', AboutUsView.as_view(), name='about_us'),
 
     path('product_review/', ProductReviewView.as_view(), name='review'),
     path('delete_review/', DeleteReviewView.as_view(), name='delete_review'),
