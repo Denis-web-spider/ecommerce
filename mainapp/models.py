@@ -235,7 +235,10 @@ class Product(models.Model):
         return reverse('product_detail', args=[self.category.category.slug, self.category.slug, str(self.id)])
 
     def save(self, *args, **kwargs):
-        self.price = self.get_price_with_morga()
+        try:
+            self.price = self.get_price_with_morga()
+        except TypeError:
+            pass
         super().save(*args, **kwargs)
 
 class Review(models.Model):
