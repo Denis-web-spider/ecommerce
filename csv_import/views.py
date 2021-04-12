@@ -57,7 +57,9 @@ class CsvImportView(View):
                         else:
                             subcategory_title = row['Категория']
                         subcategory, created = SubCategory.objects.get_or_create(category=category, title=subcategory_title)
-                        product, created = Product.objects.get_or_create(category=subcategory, title=row['Название'], description=row['Описание'], true_price=int(row['Цена']))
+                        product, created = Product.objects.get_or_create(category=subcategory, title=row['Название'])
+                        product.description = row['Описание']
+                        product.true_price = int(row['Цена'])
                         product.updated_at = timezone.now()
                         product.in_stock = True
                         product.save()
