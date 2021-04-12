@@ -57,7 +57,10 @@ class ProductAdmin(admin.ModelAdmin):
     ]
 
     def image_icon(self, obj):
-        return mark_safe(f'<img src="{obj.image().url}" style="wight: 80px; height: 80px;">')
+        try:
+            return mark_safe(f'<img src="{obj.image().url}" style="wight: 80px; height: 80px;">')
+        except:
+            return ''
     image_icon.short_description = 'Изображение'
 
     def category_title(self, obj):
