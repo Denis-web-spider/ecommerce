@@ -61,6 +61,7 @@ class CsvImportView(View):
                             product, created = Product.objects.get_or_create(category=subcategory, title=row['Название'])
                         except TypeError:
                             product = Product(category=subcategory, title=row['Название'], description=row['Описание'], true_price=int(row['Цена']))
+                            created = True
                         product.description = row['Описание']
                         product.true_price = int(row['Цена'])
                         product.updated_at = timezone.now()
