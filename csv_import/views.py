@@ -171,6 +171,12 @@ class CsvImportView(View):
 
         for product in Product.objects.all():
             delta = now - product.updated_at
-            if delta.seconds > seconds:
+            delta_hours = (delta.days * 24)
+            delta_minutes = (delta_hours * 60)
+            delta_seconds = (delta_minutes * 60) + delta.seconds
+            if delta_seconds > seconds:
                 product.in_stock = False
+                product.save()
+            else:
+                product.in_stock = True
                 product.save()
