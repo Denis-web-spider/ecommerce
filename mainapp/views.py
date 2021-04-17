@@ -14,8 +14,6 @@ from cart.views import get_cart
 from cart.models import CartItem
 
 
-import traceback
-
 SORT_CHOICES = [
         ('-ratting', 'По умолчанию'),
         ('title', 'Наименование (А -> Я)'),
@@ -25,6 +23,19 @@ SORT_CHOICES = [
         ('-price', 'Цена (по убыванию)'),
         ('price', 'Цена (по возрастанию)')
     ]
+
+def get_queryset_that_contains_in_title_every_word_in_search_string(query_set, search_string):
+    '''
+    Принимает queryset например "Product.objects.all()" и строку например "Джинсы рваные"
+
+    Возвращает queryset, в котором есть каждое слово из search_string
+
+    return:  Product.objects.all().filter(title__icontains='Джинсы').filter(title__icontains='рваные')
+    '''
+    result_queryset = query_set
+    for word in search_string.strip().split():
+        result_queryset = result_queryset.filter(title__icontains=word)
+    return result_queryset
 
 class HomePageView(LeftSideBarMixin, View):
 
@@ -59,10 +70,13 @@ class CategoryProductsListView(LeftSideBarMixin, View):
         products = current_category.get_all_products()
 
         form = SearchForm(request.GET)
+        form.fields['title'].widget.attrs.update({'data-category': f'{current_category}'})
         form.fields['sort'].choices = SORT_CHOICES
         if form.is_valid():
             if form.cleaned_data['title']:
-                products = products.filter(title__icontains=form.cleaned_data['title']).filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])
+                products = get_queryset_that_contains_in_title_every_word_in_search_string(products, form.cleaned_data['title'])
+                products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])
+                products = products.order_by(form.cleaned_data['sort'])
             else:
                 if form.cleaned_data['sort']:
                     products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])
@@ -106,9 +120,13 @@ class SubcategoryProductsListView(LeftSideBarMixin, View):
 
         form = SearchForm(request.GET)
         form.fields['sort'].choices = SORT_CHOICES
+        form.fields['title'].widget.attrs.update({'data-category': f'{current_category}',
+                                                  'data-subcategory': f'{current_subcategory}'})
         if form.is_valid():
             if form.cleaned_data['title']:
-                products = products.filter(title__icontains=form.cleaned_data['title']).filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])
+                products = get_queryset_that_contains_in_title_every_word_in_search_string(products, form.cleaned_data['title'])\
+                    .filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])\
+                    .order_by(form.cleaned_data['sort'])
             else:
                 if form.cleaned_data['sort']:
                     products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])
@@ -150,13 +168,18 @@ class SearchView(LeftSideBarMixin, View):
         cart = get_cart(request)
         search_query = request.GET['search_query']
 
-        products = Product.objects.filter(title__icontains=search_query).exclude(in_stock=False)
+        products = Product.objects.all().exclude(in_stock=False)
+        products = get_queryset_that_contains_in_title_every_word_in_search_string(products, search_query)
 
         form = SearchForm(request.GET)
         form.fields['sort'].choices = SORT_CHOICES
+        form.fields['title'].widget.attrs.update({'data-subsearch': f'{search_query}',
+                                                  'data-category': 'all'})
         if form.is_valid():
             if form.cleaned_data['title']:
-                products = products.filter(title__icontains=form.cleaned_data['title']).filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])
+                products = get_queryset_that_contains_in_title_every_word_in_search_string(products, form.cleaned_data['title'])\
+                    .filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])\
+                    .order_by(form.cleaned_data['sort'])
             else:
                 if form.cleaned_data['sort']:
                     products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])

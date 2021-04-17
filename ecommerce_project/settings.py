@@ -63,13 +63,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    
+    # 3rd party
+    'rest_framework',
     'crispy_forms',
 
     'users.apps.UsersConfig',
     'mainapp.apps.MainappConfig',
     'csv_import.apps.CsvImportConfig',
-    'cart.apps.CartConfig'
+    'cart.apps.CartConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -196,6 +199,12 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 365 * 5
 AUTHENTICATION_BACKENDS = ['users.backends.EmailBackend']
 
 SHOP_DOMAIN_NAME = os.getenv('SHOP_DOMAIN_NAME')
+
+REST_FRAMEWORK = {
+        'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
 
 # Deployment settings
 

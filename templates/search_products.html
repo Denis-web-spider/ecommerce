@@ -10,7 +10,7 @@
         <div class="row">
             <form action="{% url 'search' %}" method="get" id="search_form"></form>
             <input type="hidden" name="search_query" value="{{ search_query }}" form="search_form">
-            <div class="col-md-4">
+            <div class="col-md-4" style="padding-bottom: 10px;">
                 <div class="product-search">
                     {{ form.title }}
                     <button disabled><i class="fa fa-search"></i></button>
@@ -19,7 +19,7 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4" style="padding-bottom: 10px;">
                 <div class="product-sort">
                     {{ form.sort }}
                     {% for error in form.sort.errors %}
@@ -27,21 +27,21 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-md-2" style="padding-right: 0px;">
-                <div class="col product-price-range">
+            <div class="col-md-2" style="padding-bottom: 10px;">
+                <div class="col product-price-range" style="padding: 0px;">
                     {{ form.from_price }}
-                    <p class="text-center" style="font-size: 10px; color: gray;">{{ form.from_price.help_text }}</p>
+                    <p class="text-center" style="font-size: 10px; color: gray; margin-bottom: 0px;">{{ form.from_price.help_text }}</p>
                     {% for error in form.from_price.errors %}
-                    <p style="color: red; font-size: 10px;" class="text-center"><strong>{{ error }}</strong></p>
+                    <p style="color: red; font-size: 10px; margin-bottom: 0px;" class="text-center"><strong>{{ error }}</strong></p>
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-md-2" style="padding-left: 0px;">
-                <div class="col product-price-range">
+            <div class="col-md-2" style="">
+                <div class="col product-price-range" style="padding: 0px;">
                     {{ form.to_price }}
-                    <p class="text-center" style="font-size: 10px; color: gray;">{{ form.to_price.help_text }}</p>
+                    <p class="text-center" style="font-size: 10px; color: gray; margin-bottom: 0px;">{{ form.to_price.help_text }}</p>
                     {% for error in form.to_price.errors %}
-                    <p style="color: red; font-size: 10px;" class="text-center"><strong>{{ error }}</strong></p>
+                    <p style="color: red; font-size: 10px; margin-bottom: 0px;" class="text-center"><strong>{{ error }}</strong></p>
                     {% endfor %}
                 </div>
             </div>
@@ -58,7 +58,7 @@
 
 
 {% block slider %}
-<div class="col-md-3">
+<div class="col-lg-3">
     <div class="header">
         <div class="list-group">
             {% for category in categories %}
