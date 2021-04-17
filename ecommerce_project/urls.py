@@ -24,6 +24,7 @@ urlpatterns = [
     path('user/', include('django.contrib.auth.urls')),
     path('csv/', include('csv_import.urls')),
     path('cart/', include('cart.urls')),
+    path('api/v1/', include('api.urls')),
     path('', include('mainapp.urls')),
 ]
 

@@ -10,14 +10,14 @@
         <div class="header">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-lg-3">
                         <div class="list-group">
                             {% for category in categories %}
                             <a href="{{ category.get_absolute_url }}" class="list-group-item list-group-item-action btn btn-outline-danger">{{ category.title }}</a>
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-lg-6">
                         <div class="header-slider normal-slider">
                             {% for product_1, product_2 in high_ratting_products_for_main_slider %}
                                 <div class="header-slider-item">
