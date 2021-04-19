@@ -1,8 +1,13 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from mainapp.models import Product
 from mainapp.templatetags.category_list_tags import remove_code_from_product_title
+
+from cart.views import get_cart
 
 class SearchAPIView(APIView):
     def get(self, request, format=None):
@@ -26,5 +31,41 @@ class SearchAPIView(APIView):
         products_title = products_title[:7]
 
         return Response(products_title)
+
+class CartAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        cart = get_cart(request)
+        cart_info = {
+            'cart_items_quantity': cart.total_quantity,
+            'cart_total_price' : cart.total_price,
+        }
+
+        return Response(cart_info)
+
+    def patch(self, request):
+        cart = get_cart(request)
+        items = cart.items.all()
+
+        item_id = int(request.POST.get('id'))
+        item_quantity = int(request.POST.get('quantity'))
+
+        item = get_object_or_404(items, id=item_id)
+        item.quantity = item_quantity
+        item.save()
+
+        return Response(f'Item with id {item.id} was updated successfully')
+
+    def delete(self, request):
+        cart = get_cart(request)
+        items = cart.items.all()
+
+        item_id = int(request.POST.get('id'))
+
+        item = get_object_or_404(items, id=item_id)
+        item.delete()
+
+        return Response(f'Item with id {item_id} was deleted successfully')
 
 

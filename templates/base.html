@@ -121,8 +121,8 @@
                         <div class="user">
                             <a href="{% url 'cart' %}" class="btn cart">
                                 <i class="fa fa-shopping-cart"></i>
-                                <span>({{ cart.total_quantity }})</span>
-                                <span>({{ cart.total_price }}грн.)</span>
+                                <span id="cart-items-quantity">({{ cart.total_quantity }})</span>
+                                <span id="cart-total-price">({{ cart.total_price }}грн.)</span>
                             </a>
                         </div>
                     </div>
@@ -214,5 +214,7 @@
 
         <script src="{% static 'lib/easing/easing.min.js' %}"></script>
         <script src="{% static 'lib/slick/slick.min.js' %}"></script>
+
+        {% block script %}{% endblock script %}
     </body>
 </html>

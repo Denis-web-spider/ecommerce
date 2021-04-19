@@ -145,3 +145,71 @@ document.addEventListener('DOMContentLoaded', function (event) {
     }
 })
 
+function alert_massage (message, status) {
+    let container_fluid = document.createElement('div');
+    container_fluid.classList.add('container-fluid');
+
+    let row = document.createElement('div');
+    row.classList.add('row');
+    container_fluid.append(row);
+
+    let col = document.createElement('div');
+    col.classList.add('col-md-8');
+    col.classList.add('offset-md-2');
+    col.classList.add('text-center');
+    row.append(col);
+
+    let alert = document.createElement('div');
+    alert.classList.add('alert');
+    alert.classList.add('alert-' + status);
+    alert.classList.add('alert-dismissible');
+    alert.classList.add('fade');
+    alert.classList.add('show');
+    alert.setAttribute('role', 'alert');
+    col.append(alert);
+
+    let alert_message = document.createTextNode(message);
+    alert.append(alert_message);
+
+    let close_button = document.createElement('button');
+    close_button.classList.add('close');
+    close_button.setAttribute('type', 'button');
+    close_button.setAttribute('data-dismiss', 'alert');
+    close_button.setAttribute('aria-label', 'Close');
+    alert.append(close_button);
+
+    let span = document.createElement('span');
+    span.setAttribute('aria-hidden', 'true');
+    span.innerHTML = '&times;';
+    close_button.append(span);
+
+    let breadcrumb = document.querySelector('div[class=breadcrumb-wrap]');
+    breadcrumb.parentNode.insertBefore(container_fluid, breadcrumb);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+async function update_cart_info () {
+    let cart_items_quantity = document.getElementById('cart-items-quantity');
+    let cart_total_price = document.getElementById('cart-total-price');
+
+    let response = await fetch('http://localhost:8000/api/v1/cart/');
+    let cart_info = await response.json();
+
+    cart_items_quantity.textContent = '(' + cart_info['cart_items_quantity'] + ')';
+    cart_total_price.textContent = '(' + cart_info['cart_total_price'].toFixed(2).toString().replace('.', ',') +'грн.)';
+}

@@ -222,7 +222,8 @@
             }
         }
         $button.parent().find('input').val(newVal);
-        $button.parent().find('input').setAttribute("value", newVal);
+        $button.parent().find('input').value = newVal;
+        $button.parent().find('input').attr('value', newVal);
     });
     
     

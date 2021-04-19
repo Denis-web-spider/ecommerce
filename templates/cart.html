@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Корзина{% endblock title %}
 
 {% block content %}
@@ -50,14 +52,13 @@
                                 </tr>
                             </thead>
 
-                            <form action="{% url 'cart' %}" method="post" id="add_to_cart_form">{% csrf_token %}</form>
-                            <tbody class="align-middle">
+                            <tbody class="align-middle cart-table">
                                 {% for item in items %}
                                     <tr>
                                         <td>
                                             <div class="img">
                                                 <a href="{{ item.product.get_absolute_url }}"><img src="{{ item.product.image.url }}" alt="{{ item.product.title }}"></a>
-                                                <p>{{ item.product.title }}</p>
+                                                <p class="product-title" data-item_id="{{ item.id }}">{{ item.product.title }}</p>
                                             </div>
                                         </td>
                                         <td>{{ item.product.price }}грн.</td>
@@ -65,27 +66,21 @@
                                         <td>{{ item.color }}</td>
                                         <td>
                                             <div class="qty">
-                                                <button class="btn-minus"><i class="fa fa-minus"></i></button>
-                                                <input type="text" name="quantity_{{ item.id }}" value="{{ item.quantity }}" form="add_to_cart_form" required id="id_quantity">
-                                                <button class="btn-plus"><i class="fa fa-plus"></i></button>
+                                                <button class="btn-minus" data-action="trigger_input_event"><i class="fa fa-minus"></i></button>
+                                                <input type="text" name="quantity" value="{{ item.quantity }}" data-item_id="{{ item.id }}" data-item_price="{{ item.product.price }}">
+                                                <button class="btn-plus" data-action="trigger_input_event"><i class="fa fa-plus"></i></button>
                                             </div>
                                         </td>
-                                        <td>{{ item.total_price }}грн.</td>
+                                        <td class="item-total-price" data-item_id="{{ item.id }}">
+                                            {{ item.total_price }}грн.
+                                        </td>
                                         <td>
-                                            <form action="{% url 'delete_cart_item' %}" method="post">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="item_id" value="{{ item.id }}">
-                                                <button type="submit"><i class="far fa-trash-alt"></i></button>
-                                            </form>
+                                            <button type="submit" data-action="delete" data-item_id="{{ item.id }}"><i class="far fa-trash-alt"></i></button>
                                         </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
-                        <div class="cart-btn action text-center">
-                            <br>
-                            <button type="submit" form="add_to_cart_form"><i class="fa fa-shopping-cart"></i> Обновить корзину</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -97,13 +92,13 @@
                                 <div class="cart-content">
                                     <h1>Корзина</h1>
                                     {% for item in items %}
-                                        <p>{{ item.product.title }} <span>{{ item.quantity }} X {{ item.product.price }}грн.</span></p>
-                                        <p>{% if item.size %}Размер: {{ item.size }}{% endif %} {% if item.color %}Цвет: {{ item.color }}{% endif %}</p>
+                                    <p data-item_id="{{ item.id }}">{{ item.product.title }} <span>X {{ item.product.price }}грн.</span> <span class="quantity" data-item_id="{{ item.id }}" style="margin-right: 5px;">{{ item.quantity }}</span></p>
+                                        <p data-item_id="{{ item.id }}">{% if item.size %}Размер: {{ item.size }}{% endif %} {% if item.color %}Цвет: {{ item.color }}{% endif %}</p>
                                         {% if not forloop.last %}
-                                            <br>
+                                            <br data-item_id="{{ item.id }}">
                                         {% endif %}
                                     {% endfor %}
-                                    <h2>Общая стоимость корзины<span>{{ cart.total_price }}грн.</span></h2>
+                                    <h2>Общая стоимость корзины<span class="cart-total-price">{{ cart.total_price }}грн.</span></h2>
                                 </div>
                                 <div class="cart-btn text-center">
                                     <form action="{% url 'checkout' %}" method="get">
@@ -125,3 +120,7 @@
 {% endif %}
 <!-- Cart End -->
 {% endblock content %}
+
+{% block script %}
+    <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+{% endblock script %}

@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 from django.views.generic import View
 
 from .models import Cart, Order
-from .forms import OrderForm, SearchForm
+from .forms import OrderForm
 
 from liqpay import LiqPay
 from django.utils.decorators import method_decorator
@@ -37,42 +37,6 @@ class CartView(LoginRequiredMixin, View):
         context['cart'] = cart
 
         return render(request, 'cart.html', context)
-
-    def post(self, request):
-        cart = get_cart(request)
-        items = cart.items.all()
-
-        for item in items:
-            quantity = self.validate_quantity(request, request.POST[f'quantity_{item.id}'])
-            if quantity or quantity == 0:
-                item.quantity = quantity
-                item.save()
-
-        return HttpResponseRedirect(reverse('cart'))
-
-    def validate_quantity(self, request, quantity):
-        try:
-            quantity = int(quantity)
-        except ValueError:
-            messages.error(request, 'Некорректное значение в поле для количества товара')
-            return False
-        else:
-            return quantity
-
-class DeleteCartItemView(LoginRequiredMixin, View):
-    login_url = reverse_lazy('login')
-
-    def post(self, request):
-
-        item_id = request.POST['item_id']
-
-        cart = get_cart(request)
-        product_title = cart.items.get(id=item_id).product.title
-        cart.items.get(id=item_id).delete()
-
-        messages.success(request, f'Товар {product_title} успешно удален из вашей корзины')
-
-        return HttpResponseRedirect(reverse('cart'))
 
 class CheckoutView(LoginRequiredMixin, View):
     login_url = reverse_lazy('login')
