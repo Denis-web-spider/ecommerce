@@ -145,9 +145,17 @@ document.addEventListener('DOMContentLoaded', function (event) {
     }
 })
 
+
+// Вспомогательные функции
+let z_index = 100;
 function alert_massage (message, status) {
     let container_fluid = document.createElement('div');
     container_fluid.classList.add('container-fluid');
+    container_fluid.style.position = 'fixed';
+    container_fluid.style.zIndex = z_index;
+    container_fluid.style.marginTop = '50px';
+
+    z_index += 1;
 
     let row = document.createElement('div');
     row.classList.add('row');
@@ -168,8 +176,7 @@ function alert_massage (message, status) {
     alert.setAttribute('role', 'alert');
     col.append(alert);
 
-    let alert_message = document.createTextNode(message);
-    alert.append(alert_message);
+    alert.innerHTML = message;
 
     let close_button = document.createElement('button');
     close_button.classList.add('close');
@@ -183,8 +190,16 @@ function alert_massage (message, status) {
     span.innerHTML = '&times;';
     close_button.append(span);
 
-    let breadcrumb = document.querySelector('div[class=breadcrumb-wrap]');
-    breadcrumb.parentNode.insertBefore(container_fluid, breadcrumb);
+    document.body.prepend(container_fluid);
+
+    new Promise(function (resolve, reject) {
+        setTimeout(delete_alert, 3500);
+    })
+
+    function delete_alert () {
+        let click_event = new Event('click', { bubbles: true, cancelable: true });
+        close_button.dispatchEvent(click_event);
+    }
 }
 
 function getCookie(name) {
@@ -212,4 +227,21 @@ async function update_cart_info () {
 
     cart_items_quantity.textContent = '(' + cart_info['cart_items_quantity'] + ')';
     cart_total_price.textContent = '(' + cart_info['cart_total_price'].toFixed(2).toString().replace('.', ',') +'грн.)';
+}
+
+function type_only_numbers (event) {
+    if (event.key == 'Enter') event.target.blur();
+    if (event.key == 'Backspace') return;
+    if (!is_digit(event.key)) {
+        event.preventDefault();
+        return;
+    }
+}
+
+function is_digit (string) {
+    if (string >= '0' && string <= '9') {
+        return string;
+    } else {
+        return false;
+    }
 }

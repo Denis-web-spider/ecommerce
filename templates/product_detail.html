@@ -2,25 +2,11 @@
 
 {% load category_list_tags %}
 {% load measurements %}
+{% load static %}
 
 {% block title %}{{ current_product.title }}{% endblock title %}
 
 {% block content %}
-
-        {% if messages %}
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-8 offset-md-2 text-center">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.level_tag }} alert-dismissible fade show" role="alert">
-                                {{ message.message }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        {% endif %}
 
         <div class="breadcrumb-wrap">
             <div class="container-fluid">
@@ -54,7 +40,7 @@
                                 </div>
                                 <div class="col-md-7">
                                     <div class="product-content">
-                                        <div class="title"><h2>{{ current_product.title }}</h2></div>
+                                        <div class="title"><h2 id="product-title">{{ current_product.title }}</h2></div>
                                         <div class="ratting">
                                             {% if current_product_rating != 0 %}
                                                 <i class="{% if current_product_rating >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
@@ -69,7 +55,7 @@
                                             <p>{{ current_product.price }} грн.</p>
                                         </div>
 
-                                        <form action="{% url 'product_detail' current_category.slug current_subcategory.slug current_product.id %}" id="add_to_cart_form" method="post">{% csrf_token %}</form>
+                                        <form action="#" id="add_to_cart_form" method="post"></form>
 
                                         <div class="quantity">
                                             <h4>{{ form.quantity.label }}:</h4>
@@ -80,32 +66,32 @@
                                             </div>
                                         </div>
                                         {% for error in form.quantity.errors %}
-                                            <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
+                                        <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
                                         {% endfor %}
                                         {% if current_product.size_specifications %}
-                                            <div class="p-size">
-                                                <h4>{{ form.size.label }}:</h4>
-                                                <div class="btn-group btn-group-sm">
-                                                    <div class="box" style="width: 200px;">
-                                                        {{ form.size }}
-                                                    </div>
+                                        <div class="p-size">
+                                            <h4>{{ form.size.label }}:</h4>
+                                            <div class="btn-group btn-group-sm">
+                                                <div class="box" style="width: 200px;">
+                                                    {{ form.size }}
                                                 </div>
                                             </div>
+                                        </div>
                                         {% for error in form.size.errors %}
-                                            <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
+                                        <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
                                         {% endfor %}
                                         {% endif %}
                                         {% if current_product.color_specifications %}
-                                            <div class="p-color">
-                                                <h4>{{ form.color.label }}:</h4>
-                                                <div class="btn-group btn-group-sm">
-                                                    <div class="box" style="width: 200px;">
-                                                        {{ form.color }}
-                                                    </div>
+                                        <div class="p-color">
+                                            <h4>{{ form.color.label }}:</h4>
+                                            <div class="btn-group btn-group-sm">
+                                                <div class="box" style="width: 200px;">
+                                                    {{ form.color }}
                                                 </div>
                                             </div>
+                                        </div>
                                         {% for error in form.color.errors %}
-                                            <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
+                                        <p style="color: red; font-size: 20px;"><strong>{{ error }}</strong></p>
                                         {% endfor %}
                                         {% endif %}
                                         {{ form.product_id }}
@@ -130,7 +116,7 @@
                                         <a class="nav-link" data-toggle="pill" href="#measurement">Замеры изделия</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="pill" href="#reviews">Отзывы ({{ current_product.reviews.count }})</a>
+                                        <a class="nav-link" data-toggle="pill" href="#reviews">Отзывы (<span id="reviews-count">{{ current_product.reviews.count }}</span>)</a>
                                     </li>
                                 </ul>
 
@@ -180,125 +166,74 @@
                                         </table>
                                     </div>
                                     <div id="reviews" class="container tab-pane fade">
+
+                                        <div class="modal fade" id="delete-review-modal" tabindex="-1" role="dialog" aria-labelledby="delete_review_modal_label" aria-hidden="true" data-action="delete">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-center" id="delete_review_modal_label">Вы уверены, что хотите удалить отзыв?</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="reviewer">
+                                                            <span class="user-first-name" style="font-size: 24px; font-weight: bold; color: #FF6F61;">{{ review.first_name }}</span>
+                                                            <span class="user-second-name" style="font-size: 24px; font-weight: bold; color: #FF6F61;">{{ review.last_name }}</span>
+                                                        </div>
+                                                        <div class="ratting">
+                                                            <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            <i class="{% if review.ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            <i class="{% if review.ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                            <i class="{% if review.ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+                                                        </div>
+                                                        <p class="user-review">
+                                                            {{ review.review }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Назад</button>
+                                                        <form action="#">
+                                                            <input type="hidden" name="product_id" value="{{ current_product.id }}">
+                                                            <button type="submit" class="btn btn-primary">Удалить</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal fade" id="edit-review-modal" tabindex="-1" role="dialog" aria-labelledby="edit_review_modal_label" aria-hidden="true" data-action="edit">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title text-center" id="edit_review_modal_label">Отредактируйте Ваш отзыв</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="#" class="reviews-submit" data-modal="true">
+                                                            <div class="row form"></div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         {% for review in reviews %}
                                             {% if user == review.user %}
-                                                <div class="reviews-submitted" style="background-color: #FFE0BC;">
-                                                    <div class="text-right">
-                                                        <button type="button" data-toggle="modal" data-target="#edit_review_modal" class="btn btn-outline-danger"><i class="fas fa-pen-square fa-lg"></i></button>
-                                                        <button type="button" data-toggle="modal" data-target="#delete_review_modal" class="btn btn-outline-danger"><i class="far fa-trash-alt"></i></button>
+                                                <div class="reviews-submitted" style="background-color: #FFE0BC; padding: 5px;" id="current-user-review">
+
+                                                    <div style="display: inline; float: right;">
+                                                        <button type="button" data-toggle="modal" data-target="#edit-review-modal" class="btn btn-outline-danger"><i class="fas fa-pen-square fa-lg"></i></button>
+                                                        <button type="button" data-toggle="modal" data-target="#delete-review-modal" class="btn btn-outline-danger"><i class="far fa-trash-alt"></i></button>
                                                     </div>
 
-                                                    <div class="modal fade" id="delete_review_modal" tabindex="-1" role="dialog" aria-labelledby="delete_review_modal_label" aria-hidden="true">
-                                                        <div class="modal-dialog" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title text-center" id="delete_review_modal_label">Вы уверены, что хотите удалить отзыв?</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="reviewer">{{ review.user.first_name }} {{ review.user.last_name }} - <span>{{ review.created_at }}</span></div>
-                                                                    <div class="ratting">
-                                                                        <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                        <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                        <i class="{% if review.ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                        <i class="{% if review.ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                        <i class="{% if review.ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                    </div>
-                                                                    <p>
-                                                                        {{ review.review }}
-                                                                    </p>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Назад</button>
-                                                                    <form action="{% url 'delete_review' %}?redirect={% url 'product_detail' current_category.slug current_subcategory.slug current_product.id %}" method="post">
-                                                                        {% csrf_token %}
-                                                                        <input type="hidden" name="review_id" value="{{ review.id }}">
-                                                                        <button type="submit" class="btn btn-primary">Удалить</button>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    <div class="reviewer">
+                                                        <span class="user-first-name" style="font-size: 24px; font-weight: bold; color: #FF6F61;">{{ review.first_name }}</span>
+                                                        <span class="user-second-name" style="font-size: 24px; font-weight: bold; color: #FF6F61;">{{ review.second_name }}</span>
                                                     </div>
-
-                                                    <div class="modal fade" id="edit_review_modal" tabindex="-1" role="dialog" aria-labelledby="edit_review_modal_label" aria-hidden="true">
-                                                        <div class="modal-dialog" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title text-center" id="edit_review_modal_label">Отредактируйте Ваш отзыв</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <h4 class="text-center">Старый отзыв</h4>
-                                                                    <div class="reviewer">{{ review.user.first_name }} {{ review.user.last_name }} - <span>{{ review.created_at }}</span></div>
-                                                                    <div class="ratting">
-                                                                        <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                        <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                        <i class="{% if review.ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                        <i class="{% if review.ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                        <i class="{% if review.ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                                    </div>
-                                                                    <p>
-                                                                        {{ review.review }}
-                                                                    </p>
-                                                                    <hr>
-                                                                    <h4 class="text-center">Новый отзыв</h4>
-                                                                    <form action="{% url 'review' %}?redirect={% url 'product_detail' current_category.slug current_subcategory.slug current_product.id %}" method="post" class="reviews-submit">
-                                                                        {% csrf_token %}
-                                                                            <div class="row form">
-                                                                                <div class="ratting">
-                                                                                    <div class="wrap">
-                                                                                        <div class="stars">
-                                                                                            <label class="rate">
-                                                                                                <input type="radio" name="ratting" id="star11" value="1">
-                                                                                                <div class="face"></div>
-                                                                                                <i class="far fa-star star one-star"></i>
-                                                                                            </label>
-                                                                                            <label class="rate">
-                                                                                                <input type="radio" name="ratting" id="star22" value="2">
-                                                                                                <div class="face"></div>
-                                                                                                <i class="far fa-star star two-star"></i>
-                                                                                            </label>
-                                                                                            <label class="rate">
-                                                                                                <input type="radio" name="ratting" id="star33" value="3">
-                                                                                                <div class="face"></div>
-                                                                                                <i class="far fa-star star three-star"></i>
-                                                                                            </label>
-                                                                                            <label class="rate">
-                                                                                                <input type="radio" name="ratting" id="star44" value="4">
-                                                                                                <div class="face"></div>
-                                                                                                <i class="far fa-star star four-star"></i>
-                                                                                            </label>
-                                                                                            <label class="rate">
-                                                                                                <input type="radio" name="ratting" id="star55" value="5">
-                                                                                                <div class="face"></div>
-                                                                                                <i class="far fa-star star five-star"></i>
-                                                                                            </label>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-sm-12">
-                                                                                    <textarea placeholder="Отзыв" name="review"></textarea>
-                                                                                </div>
-                                                                                <div class="col-sm-12 text-center">
-                                                                                    <input type="hidden" name="product_id" value="{{ current_product.id }}">
-                                                                                    <input type="hidden" name="edit" value="True">
-                                                                                    <div class="modal-footer">
-                                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Назад</button>
-                                                                                        <button id="targett">Отправить</button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                     </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="reviewer">{{ review.user.first_name }} {{ review.user.last_name }} - <span>{{ review.created_at }}</span></div>
                                                     <div class="ratting">
                                                         <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
                                                         <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
@@ -306,13 +241,15 @@
                                                         <i class="{% if review.ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
                                                         <i class="{% if review.ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
                                                     </div>
-                                                    <p>
-                                                        {{ review.review }}
-                                                    </p>
+
+                                                    <p class="user-review">{{ review.review }}</p>
                                                 </div>
                                             {% else %}
                                                 <div class="reviews-submitted">
-                                                    <div class="reviewer">{{ review.user.first_name }} {{ review.user.last_name }} - <span>{{ review.created_at }}</span></div>
+                                                    <div class="reviewer">
+                                                        <span class="user-first-name" style="font-size: 24px; font-weight: bold; color: #FF6F61;">{{ review.first_name }}</span>
+                                                        <span class="user-second-name" style="font-size: 24px; font-weight: bold; color: #FF6F61;">{{ review.second_name }}</span>
+                                                    </div>
                                                     <div class="ratting">
                                                         <i class="{% if review.ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
                                                         <i class="{% if review.ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
@@ -327,8 +264,7 @@
                                             {% endif %}
                                         {% endfor %}
                                             {% if user.is_authenticated %}
-                                            <form action="{% url 'review' %}?redirect={% url 'product_detail' current_category.slug current_subcategory.slug current_product.id %}" method="post" class="reviews-submit">
-                                                {% csrf_token %}
+                                            <form action="#" method="post" class="reviews-submit" id="add-review-form">
                                                 <h4>Оставьте отзыв:</h4>
                                                     <div class="row form">
                                                         <div class="ratting">
@@ -362,8 +298,16 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <input type="text" name="first_name" placeholder="Имя" required>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <input type="text" name="second_name" placeholder="Фамилия" required>
+                                                            </div>
+                                                        </div>
                                                         <div class="col-sm-12">
-                                                            <textarea placeholder="Отзыв" name="review"></textarea>
+                                                            <textarea placeholder="Отзыв" name="review" required></textarea>
                                                         </div>
                                                         <div class="col-sm-12 text-center">
                                                             <input type="hidden" name="product_id" value="{{ current_product.id }}">
@@ -460,3 +404,10 @@
         </div>
         <!-- Product Detail End -->
 {% endblock content %}
+
+{% block script %}
+    <script type="application/javascript">
+        let login_url = '{{ login_url }}';
+    </script>
+    <script type="application/javascript" src="{% static 'js/product_detail.js' %}"></script>
+{% endblock script %}

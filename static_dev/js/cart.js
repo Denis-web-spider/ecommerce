@@ -65,23 +65,6 @@ function set_zero_if_value_is_black (event) {
     }
 }
 
-function type_only_numbers (event) {
-    if (event.key == 'Enter') event.target.blur();
-    if (event.key == 'Backspace') return;
-    if (!is_digit(event.key)) {
-        event.preventDefault();
-        return;
-    }
-}
-
-function is_digit (string) {
-    if (string >= '0' && string <= '9') {
-        return string;
-    } else {
-        return false;
-    }
-}
-
 function trigger_input_event_on_button_click (event) {
     let target = event.target;
     if (target.tagName == 'I') target = target.closest('button');

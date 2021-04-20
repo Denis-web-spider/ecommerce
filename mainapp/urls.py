@@ -5,8 +5,6 @@ from .views import (
     CategoryProductsListView,
     SubcategoryProductsListView,
     ProductDetailView,
-    ProductReviewView,
-    DeleteReviewView,
     SearchView,
 
     ShippingPolicyView,
@@ -29,8 +27,6 @@ urlpatterns = [
     path('offer_policy/', OfferPolicyView.as_view(), name='offer_policy'),
     path('about_us/', AboutUsView.as_view(), name='about_us'),
 
-    path('product_review/', ProductReviewView.as_view(), name='review'),
-    path('delete_review/', DeleteReviewView.as_view(), name='delete_review'),
     path('search/', SearchView.as_view(), name='search'),
     path('<str:slug>/', CategoryProductsListView.as_view(), name='category_products'),
     path('<str:category_slug>/<str:subcategory_slug>/', SubcategoryProductsListView.as_view(), name='subcategory_products'),

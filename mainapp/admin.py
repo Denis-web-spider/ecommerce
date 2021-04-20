@@ -190,12 +190,12 @@ class ProductSpecificationAdmin(admin.ModelAdmin):
     feature_value_value.short_description = 'Значение характеристики'
 
 class  ReviewAdmin(admin.ModelAdmin):
-    list_display = ['product_title', 'user', 'ratting', 'created_at']
-    list_display_links = ['product_title', 'user', 'ratting', 'created_at']
-    search_fields = ['product__title', 'user__email', 'user__first_name', 'ratting']
+    list_display = ['product_title', 'user', 'first_name', 'second_name', 'ratting', 'created_at']
+    list_display_links = ['product_title', 'user', 'first_name', 'second_name', 'ratting', 'created_at']
+    search_fields = ['product__title', 'user__email',  'first_name', 'second_name', 'ratting']
     list_filter = ['ratting', 'created_at']
-    fields = ['product', 'user', 'ratting', 'review', 'created_at']
-    readonly_fields = ['product', 'user', 'ratting', 'review', 'created_at']
+    fields = ['product', 'user', 'first_name', 'second_name', 'ratting', 'review', 'created_at']
+    readonly_fields = ['product', 'user', 'first_name', 'second_name', 'ratting', 'review', 'created_at']
 
     def product_title(self, obj):
         return obj.product.title

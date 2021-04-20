@@ -243,6 +243,8 @@ class Review(models.Model):
     user = models.ForeignKey(UserModel, verbose_name='Пользователь', on_delete=models.CASCADE)
     ratting = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)], verbose_name='Оценка')
     review = models.TextField(verbose_name='Отзыв')
+    first_name = models.CharField(max_length=255, verbose_name='Имя')
+    second_name = models.CharField(max_length=255, verbose_name='Фамилия')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

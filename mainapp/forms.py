@@ -7,10 +7,12 @@ class ProductForm(forms.Form):
     quantity = forms.CharField(initial='1', label='Количество', label_suffix=':')
     size = forms.ChoiceField(label='Размер', label_suffix=':')
     color = forms.ChoiceField(label='Цвет', label_suffix=':')
+    product_id = forms.IntegerField(widget=forms.HiddenInput())
 
     quantity.widget.attrs.update({'form': 'add_to_cart_form'})
     size.widget.attrs.update({'form': 'add_to_cart_form'})
     color.widget.attrs.update({'form': 'add_to_cart_form'})
+    product_id.widget.attrs.update({'form': 'add_to_cart_form'})
 
     def clean_quantity(self):
         quantity = self.cleaned_data['quantity']
@@ -229,6 +231,5 @@ def populate_form_choice_fields(form, product):
     else:
         form.fields['color'].required = False
     return form
-
 
 ReturnItemFormset = formset_factory(ReturnItemForm, extra=10)

@@ -4,10 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from mainapp.models import Product
+from mainapp.models import Product, Review
 from mainapp.templatetags.category_list_tags import remove_code_from_product_title
 
 from cart.views import get_cart
+from cart.models import CartItem
 
 class SearchAPIView(APIView):
     def get(self, request, format=None):
@@ -44,6 +45,20 @@ class CartAPIView(APIView):
 
         return Response(cart_info)
 
+    def post(self, request):
+        cart = get_cart(request)
+
+        product = Product.objects.get(id=request.POST['product_id'])
+        quantity = int(request.POST['quantity'])
+        color = request.POST.get('color', '')
+        size = request.POST.get('size', '')
+
+        item, created = CartItem.objects.get_or_create(cart=cart, product=product, size=size, color=color)
+        item.quantity += quantity
+        item.save()
+
+        return Response(f'Item with id {item.id} was added successfully!')
+
     def patch(self, request):
         cart = get_cart(request)
         items = cart.items.all()
@@ -68,4 +83,32 @@ class CartAPIView(APIView):
 
         return Response(f'Item with id {item_id} was deleted successfully')
 
+class ReviewAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+
+        product = Product.objects.get(id=request.POST['product_id'])
+        user = request.user
+        ratting = int(request.POST['ratting'])
+        review = request.POST['review']
+        first_name = request.POST['first_name']
+        second_name = request.POST['second_name']
+
+        review_object, created = Review.objects.get_or_create(product=product, user=user)
+        review_object.first_name = first_name
+        review_object.second_name = second_name
+        review_object.ratting = ratting
+        review_object.review = review
+        review_object.save()
+
+        return Response({'created': created})
+
+    def delete(self, request):
+
+        user = request.user
+        product_id = request.POST['product_id']
+        review = get_object_or_404(Review, product__id=product_id, user=user)
+        review.delete()
+
+        return Response({'deleted': True})

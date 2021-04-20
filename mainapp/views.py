@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 
-from .models import Category, Product, SubCategory, Review, ReturnLetter, ReturnItem, SpecificationValue
+from .models import Category, Product, SubCategory, Review, ReturnLetter, ReturnItem
 from .mixins import LeftSideBarMixin
 from .forms import ProductForm, SearchForm, populate_form_choice_fields, ReturnLetterForm, ReturnItemFormset
 
@@ -225,6 +225,9 @@ class ProductDetailView(View):
 
         form = ProductForm()
         form = populate_form_choice_fields(form, current_product)
+        form.fields['product_id'].widget.attrs.update({'value': f'{current_product.id}'})
+
+        login_url = reverse('login') + '?next=' + reverse('product_detail', args=[category_slug, subcategory_slug, id])
 
         context['current_category'] = current_category
         context['current_subcategory'] = current_subcategory
@@ -234,109 +237,9 @@ class ProductDetailView(View):
         context['current_product_rating'] = current_product_rating
         context['cart'] = cart
         context['form'] = form
+        context['login_url'] = login_url
 
         return render(request, 'product_detail.html', context)
-
-    def post(self, request, category_slug, subcategory_slug, id):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('login') + '?next=' + reverse('product_detail', args=[category_slug, subcategory_slug, id]))
-        form = ProductForm(request.POST)
-
-        context = {}
-        current_category = Category.objects.get(slug=category_slug)
-        current_subcategory = SubCategory.objects.get(category=current_category, slug=subcategory_slug)
-        current_product = Product.objects.get(id=id)
-        related_products = current_product.get_related_products()
-        reviews = current_product.reviews.all()
-        current_product_rating = current_product.rounded_ratting()
-        cart = get_cart(request)
-
-        form = populate_form_choice_fields(form, current_product)
-
-        context['current_category'] = current_category
-        context['current_subcategory'] = current_subcategory
-        context['current_product'] = current_product
-        context['related_products'] = related_products
-        context['reviews'] = reviews
-        context['current_product_rating'] = current_product_rating
-        context['cart'] = cart
-        context['form'] = form
-
-        if form.is_valid():
-            quantity = int(form.cleaned_data['quantity'])
-            size = form.cleaned_data.get('size', '')
-            color = form.cleaned_data.get('color', '')
-
-            item, created = CartItem.objects.get_or_create(cart=cart, product=current_product, size=size, color=color)
-            item.quantity = quantity
-            item.save()
-
-            messages.info(request, f'{current_product.title} X {quantity}, добавлено в корзину')
-        return render(request, 'product_detail.html', context)
-
-class ProductReviewView(View):
-
-    def post(self, request):
-        redirect_url = request.GET.get('redirect', reverse('home'))
-        if request.user.is_authenticated:
-            product_id = request.POST['product_id']
-            product = Product.objects.get(id=product_id)
-            edit = request.POST.get('edit', False)
-            user = request.user
-
-            ratting, review = self.validate_ratting_and_review(request)
-
-            try:
-                if edit:
-                    review_edit = Review.objects.get(product=product, user=user)
-                    if ratting and review:
-                        review_edit.ratting = ratting
-                        review_edit.review = review
-                        review_edit.save()
-                        messages.success(request, 'Ваш отзыв успешно отредактирован')
-                else:
-                    Review.objects.get(product=product, user=user)
-                    messages.error(request, 'Вы уже оставили Ваш отзыв под этим продуктом ранее')
-            except Review.DoesNotExist:
-                Review.objects.create(product=product, user=user, ratting=ratting, review=review)
-                messages.success(request, 'Ваш отзыв успешно добавлен')
-        else:
-            messages.success(request, 'Неавторизованые пользователи не могут оставлять комментарии')
-
-        return HttpResponseRedirect(redirect_url)
-
-    def validate_ratting_and_review(self, request):
-
-        ratting = request.POST.get('ratting', None)
-        review = request.POST.get('review', None)
-
-        if ratting:
-            ratting = int(request.POST['ratting'])
-        else:
-            messages.error(request, 'Вы забыли поставить оценку нашему продукту. Это является обязательным, если Вы оставляете отзыв')
-
-        if review:
-            review = request.POST['review']
-        else:
-            messages.error(request, 'Вы забыли написать текст отзыва. Это является обязательным, если Вы оставляете отзыв')
-
-        return ratting, review
-
-class DeleteReviewView(View):
-
-    def post(self, request):
-        redirect_url = request.GET.get('redirect', reverse('home'))
-        if request.user.is_authenticated:
-            review_id = int(request.POST['review_id'])
-            review = Review.objects.get(id=review_id)
-            if review.user == request.user:
-                review.delete()
-                messages.success(request, 'Ваш отзыв был успешно удалён')
-            else:
-                messages.error(request, 'Это не ваш отзыв. Вы не можете его удалить')
-        else:
-            messages.error(request, 'Вы не можете удалить отзыв, поскольку Вы неавторизированы')
-        return HttpResponseRedirect(redirect_url)
 
 class ShippingPolicyView(View):
 
