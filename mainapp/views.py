@@ -1,17 +1,15 @@
 from django.shortcuts import render, reverse
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage
-from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 
-from .models import Category, Product, SubCategory, Review, ReturnLetter, ReturnItem
+from .models import Category, Product, SubCategory, ReturnLetter, ReturnItem
 from .mixins import LeftSideBarMixin
 from .forms import ProductForm, SearchForm, populate_form_choice_fields, ReturnLetterForm, ReturnItemFormset
 
 from cart.views import get_cart
-from cart.models import CartItem
 
 
 SORT_CHOICES = [
@@ -44,8 +42,9 @@ class HomePageView(LeftSideBarMixin, View):
 
         high_ratting_products_for_main_slider = []
         for category in Category.objects.all():
-            products = category.get_all_products()[:2]
-            high_ratting_products_for_main_slider.append(tuple(products))
+            products = tuple(category.get_all_products()[:2])
+            if len(products) == 2:
+                high_ratting_products_for_main_slider.append(products)
 
         side_products = Product.objects.all().order_by('-ratting').exclude(in_stock=False)[:5]
         most_popular_products = Product.objects.all().order_by('-ratting').exclude(in_stock=False)[:10]
