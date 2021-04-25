@@ -33,8 +33,6 @@ class CsvImportView(View):
                 'form': form
             }
 
-            self.check_in_stock(days=1)
-
             return render(request, 'csv_import.html', context)
         else:
             return render(request, 'home.html')
