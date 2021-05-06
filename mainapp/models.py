@@ -221,7 +221,7 @@ class Product(models.Model):
         return round(self.ratting)
 
     def get_price_with_morga(self):
-        return round(self.true_price / 100) * self.morga + round(self.true_price) + 0.99
+        return round(self.true_price / 100 * self.morga + self.true_price) + 0.99
 
     def get_related_products(self, count=10):
         products_with_four_star_or_greater = Product.objects.filter(category=self.category, ratting__gte=3.5).exclude(id=self.id).order_by('-ratting')[:count]
