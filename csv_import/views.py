@@ -151,18 +151,25 @@ class CsvImportView(View):
         if specification_value:
             product_feature, created = ProductFeatures.objects.get_or_create(feature_key=specification_key, category=product.category)
             product_feature_value, created = SpecificationValue.objects.get_or_create(value=specification_value)
-            product_specification, created = ProductSpecification.objects.get_or_create(product=product, feature_key=product_feature)
-            product_specification.feature_value = product_feature_value
-            product_specification.save()
+            if ProductSpecification.objects.filter(product=product, feature_key=product_feature).exists():
+                product_specification = ProductSpecification.objects.get(product=product, feature_key=product_feature)
+                product_specification.feature_value = product_feature_value
+                product_specification.save()
+            else:
+                ProductSpecification.objects.create(product=product, feature_key=product_feature, feature_value=product_feature_value)
 
     def save_measurement(self, measurement_key, row, product):
         measurement_value = row.get(measurement_key, '')
         if measurement_value:
             product_measurement_key, created = ProductMeasurementsKeys.objects.get_or_create(measurement_key=measurement_key, category=product.category)
             product_measurement_value, created = SpecificationValue.objects.get_or_create(value=measurement_value)
-            product_measurement, created = ProductMeasurements.objects.get_or_create(product=product, measurement_key=product_measurement_key)
-            product_measurement.measurement_value = product_measurement_value
-            product_measurement.save()
+            if ProductMeasurements.objects.filter(product=product, measurement_key=product_measurement_key).exists():
+                product_measurement = ProductMeasurements.objects.get(product=product, measurement_key=product_measurement_key)
+                product_measurement.measurement_value = product_measurement_value
+                product_measurement.save()
+            else:
+                ProductMeasurements.objects.create(product=product, measurement_key=product_measurement_key, measurement_value=product_measurement_value)
+
 
     def check_in_stock(self, days=0, hours=0, minutes=0, seconds=0):
         now = timezone.now()
