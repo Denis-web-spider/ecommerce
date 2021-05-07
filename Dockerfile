@@ -5,6 +5,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /ecommerce
 
-COPY . .
+COPY Pipfile .
+COPY Pipfile.lock .
 
 RUN pip install pipenv && pipenv install --system
