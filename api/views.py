@@ -54,8 +54,12 @@ class CartAPIView(APIView):
         size = request.POST.get('size', '')
 
         item, created = CartItem.objects.get_or_create(cart=cart, product=product, size=size, color=color)
-        item.quantity += quantity
-        item.save()
+        if created:
+            item.quantity = quantity
+            item.save()
+        else:
+            item.quantity += quantity
+            item.save()
 
         return Response(f'Item with id {item.id} was added successfully!')
 
