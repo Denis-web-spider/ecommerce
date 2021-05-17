@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from mainapp.models import Product, Review
-from mainapp.templatetags.category_list_tags import remove_code_from_product_title
+from mainapp.templatetags.product_tags import remove_code_from_product_title
 
 from cart.views import get_cart
 from cart.models import CartItem
@@ -36,7 +36,7 @@ class SearchAPIView(APIView):
 class CartAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, format=None):
+    def get(self, request):
         cart = get_cart(request)
         cart_info = {
             'cart_items_quantity': cart.total_quantity,

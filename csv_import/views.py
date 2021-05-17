@@ -22,11 +22,15 @@ from mainapp.models import (
     ProductMeasurements
 )
 
-import traceback
-
 class CsvImportView(View):
 
     def get(self, request):
+        SpecificationValue.objects.all().delete()
+        ProductFeatures.objects.all().delete()
+        ProductSpecification.objects.all().delete()
+        ProductMeasurementsKeys.objects.all().delete()
+        ProductMeasurements.objects.all().delete()
+
         if request.user.is_superuser:
             form = CsvForm()
             context = {

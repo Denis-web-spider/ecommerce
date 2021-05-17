@@ -1,0 +1,34 @@
+{% load product_tags %}
+
+<div class="product-item">
+    <div class="product-title">
+        <a href="{{ product.get_absolute_url }}" style="font-size: 12px;">{{ product.title|remove_code_from_product_title }}</a>
+        <div class="ratting">
+            {% if product.rounded_ratting != 0 %}
+            <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
+            <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
+            <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
+            <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
+            <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
+            {% else %}
+            <br>
+            {% endif %}
+        </div>
+    </div>
+    <div class="product-image-my">
+        <a href="{{ product.get_absolute_url }}">
+            {% if not image_url %}
+                <img src="{{ product.image.url }}" alt="{{ product.title }}">
+            {% else %}
+                <img src="{{ image_url }}" alt="{{ image_alt }}">
+            {% endif %}
+        </a>
+    </div>
+    <div class="product-price">
+        <div class="row">
+            <div class="col text-center">
+                <h3 style="font-size: 24px;">{{ product.price }}<span>грн.</span></h3>
+            </div>
+        </div>
+    </div>
+</div>

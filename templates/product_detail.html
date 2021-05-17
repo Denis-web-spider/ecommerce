@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load category_list_tags %}
+{% load product_tags %}
 {% load measurements %}
 {% load static %}
 
@@ -330,31 +330,7 @@
                                 <div class="row align-items-center product-slider product-slider-3">
                                     {% for product in related_products %}
                                         <div class="col-lg-3">
-                                            <div class="product-item">
-                                                <div class="product-title">
-                                                    <a href="{{ product.get_absolute_url }}" style="font-size: 12px;">{{ product.title|remove_code_from_product_title }}</a>
-                                                    <div class="ratting">
-                                                        {% if product.rounded_ratting != 0 %}
-                                                            <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                            <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                            <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                            <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                            <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                        {% else %}
-                                                            <br>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                                <div class="product-image-my">
-                                                    <a href="{{ product.get_absolute_url }}">
-                                                        <img src="{{ product.image.url }}" alt="{{ product.title }}">
-                                                    </a>
-                                                </div>
-                                                <div class="product-price">
-                                                    <h3 style="font-size: 22px;">{{ product.price }}<span>грн.</span></h3>
-                                                    <a class="btn" href="{{ product.get_absolute_url }}"><i class="fa fa-search"></i>Подробнее</a>
-                                                </div>
-                                            </div>
+                                            {% include 'components/product_item.html' %}
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -368,31 +344,7 @@
                             <div class="sidebar-widget widget-slider">
                                 <div class="sidebar-slider normal-slider">
                                     {% for product in related_products %}
-                                        <div class="product-item">
-                                            <div class="product-title">
-                                                <a href="{{ product.get_absolute_url }}" style="font-size: 16px;">{{ product.title|remove_code_from_product_title }}</a>
-                                                <div class="ratting">
-                                                    {% if product.rounded_ratting != 0 %}
-                                                        <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                        <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                        <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                        <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                        <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
-                                                    {% else %}
-                                                        <br>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="product-image-my">
-                                                <a href="{{ product.get_absolute_url }}">
-                                                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
-                                                </a>
-                                            </div>
-                                            <div class="product-price">
-                                                <h3>{{ product.price }}<span>грн.</span></h3>
-                                                <a class="btn" href="{{ product.get_absolute_url }}"><i class="fa fa-search"></i>Подробнее</a>
-                                            </div>
-                                        </div>
+                                        {% include 'components/product_item.html' %}
                                     {% endfor %}
                                 </div>
                             </div>
