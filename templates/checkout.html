@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load product_tags %}
+
 {% block title %}Оформление заказа{% endblock title %}
 
 {% block content %}
@@ -40,11 +42,11 @@
                                                 <p>{{ item.product.title }}</p>
                                             </div>
                                         </td>
-                                        <td>{{ item.product.price }}грн.</td>
+                                        <td>{{ item.price|pretty_price }} грн.</td>
                                         <td>{{ item.size }}</td>
                                         <td>{{ item.color }}</td>
                                         <td>{{ item.quantity }}</td>
-                                        <td>{{ item.total_price }}грн.</td>
+                                        <td>{{ item.total_price|pretty_price }} грн.</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -57,7 +59,7 @@
                             <h2>Общая стоимость корзины</h2>
                         </div>
                         <div class="col-lg-6 text-right">
-                            <h2>{{ cart.total_price }}грн.</h2>
+                            <h2>{{ cart.total_price|pretty_price }} грн.</h2>
                         </div>
                     </div>
                 </div>

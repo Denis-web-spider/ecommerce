@@ -1,5 +1,8 @@
 <!DOCTYPE html>
+
 {% load static %}
+{% load product_tags %}
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -122,8 +125,10 @@
                         <div class="user">
                             <a href="{% url 'cart' %}" class="btn cart">
                                 <i class="fa fa-shopping-cart"></i>
-                                <span id="cart-items-quantity">({{ cart.total_quantity }})</span>
-                                <span id="cart-total-price">({{ cart.total_price }}грн.)</span>
+                                {% if cart %}
+                                    <span id="cart-items-quantity">({{ cart.total_quantity }})</span>
+                                    <span id="cart-total-price">({{ cart.total_price|pretty_price }} грн.)</span>
+                                {% endif %}
                             </a>
                         </div>
                     </div>

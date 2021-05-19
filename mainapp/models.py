@@ -235,6 +235,18 @@ class Product(models.Model):
         main_category_title = self.category.category.title
         subcategory_title = self.category.title
 
+        if self.true_price < 50:
+            self.markup = 100
+        elif self.true_price < 100:
+            self.markup = 50
+
+        if self.true_price > 1200:
+            self.markup = 10
+        elif self.true_price > 800:
+            self.markup = 15
+        elif self.true_price > 400:
+            self.markup = 20
+
         if main_category_title == 'Аксессуары':
             if self.true_price < 50:
                 self.markup = 200
@@ -272,9 +284,9 @@ class Product(models.Model):
         if (main_category_title == 'Женская одежда' and subcategory_title == 'Белье') or \
            (main_category_title == 'Мужская одежда' and subcategory_title == 'Белье'):
             if self.true_price < 50:
-                self.markup = 400
+                self.markup = 100
             elif self.true_price < 100:
-                self.markup = 200
+                self.markup = 75
 
         if main_category_title == 'Мужская обувь':
             if self.true_price < 50:
@@ -293,12 +305,6 @@ class Product(models.Model):
                 self.markup = 50
 
         if main_category_title == 'Подростковая одежда':
-            if self.true_price < 50:
-                self.markup = 100
-            elif self.true_price < 100:
-                self.markup = 50
-
-        else:
             if self.true_price < 50:
                 self.markup = 100
             elif self.true_price < 100:

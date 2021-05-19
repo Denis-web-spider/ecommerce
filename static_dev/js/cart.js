@@ -22,12 +22,12 @@ function recalculate_total_item_price (event) {
     target.setAttribute('value', target.value);
 
     let item_id = target.dataset.item_id;
-    let item_price = +target.dataset.item_price.replace(',', '.');
+    let item_price = +target.dataset.item_price;
     let item_total_price_td = document.querySelector('td[class="item-total-price"][data-item_id="' + item_id + '"]');
-    let item_total_price = (item_price * +target.value).toFixed(2).toString().replace('.', ',');
+    let item_total_price = pretty_price((item_price * +target.value).toString());
 
     document.querySelector('span[class="quantity"][data-item_id="' + item_id + '"]').textContent = target.value + ' ';
-    item_total_price_td.textContent = item_total_price + 'грн.';
+    item_total_price_td.textContent = item_total_price + ' грн.';
 
     recalculate_total_cart_price();
 
@@ -43,13 +43,13 @@ function recalculate_total_cart_price () {
     let cart_total_price = 0;
 
     for (let item_total_price_td of document.querySelectorAll('td[class=item-total-price]')) {
-        cart_total_price += parseFloat(item_total_price_td.textContent.replace(',', '.'));
+        cart_total_price += parseInt(item_total_price_td.textContent.replaceAll(' ', ''));
     }
-    cart_total_price = cart_total_price.toFixed(2).toString().replace('.', ',');
+    cart_total_price = pretty_price(cart_total_price.toString());
 
-    document.querySelector('span[class=cart-total-price]').textContent = cart_total_price + 'грн.';
+    document.querySelector('span[class=cart-total-price]').textContent = cart_total_price + ' грн.';
 
-    if (cart_total_price == '0,00') {
+    if (cart_total_price == 0) {
         empty_cart();
     }
 }
@@ -148,3 +148,4 @@ async function delete_item (target) {
 
     update_cart_info();
 }
+

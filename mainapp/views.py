@@ -40,34 +40,6 @@ class HomePageView(LeftSideBarMixin, View):
     def get(self, request):
         context = self.get_context_data()
 
-
-
-
-
-
-
-
-
-
-
-        for product in Product.objects.all():
-            product.save()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         high_ratting_products_for_main_slider = []
         for category in Category.objects.all():
             products = tuple(category.get_all_products()[:2])

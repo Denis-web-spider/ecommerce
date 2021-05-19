@@ -226,7 +226,7 @@ async function update_cart_info () {
     let cart_info = await response.json();
 
     cart_items_quantity.textContent = '(' + cart_info['cart_items_quantity'] + ')';
-    cart_total_price.textContent = '(' + cart_info['cart_total_price'].toFixed(2).toString().replace('.', ',') +'грн.)';
+    cart_total_price.textContent = '(' + pretty_price(cart_info['cart_total_price'].toString()) +' грн.)';
 }
 
 function type_only_numbers (event) {
@@ -244,4 +244,21 @@ function is_digit (string) {
     } else {
         return false;
     }
+}
+
+function pretty_price (string_price) {
+
+    new_prise = '';
+    for (let i = string_price.length - 1; i >= 0; i--) {
+
+        let index = string_price.length - 1 - i;
+        if ((index) % 3 == 0) {
+            new_prise += ' ' + string_price[i];
+        } else {
+            new_prise += string_price[i];
+        }
+    }
+
+    new_prise = new_prise.split("").reverse().join("");
+    return new_prise;
 }

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load product_tags%}
 
 {% block title %}Корзина{% endblock title %}
 
@@ -61,18 +62,18 @@
                                                 <p class="product-title" data-item_id="{{ item.id }}">{{ item.product.title }}</p>
                                             </div>
                                         </td>
-                                        <td>{{ item.product.price }}грн.</td>
+                                        <td>{{ item.price|pretty_price }} грн.</td>
                                         <td>{{ item.size }}</td>
                                         <td>{{ item.color }}</td>
                                         <td>
                                             <div class="qty">
                                                 <button class="btn-minus" data-action="trigger_input_event"><i class="fa fa-minus"></i></button>
-                                                <input type="text" name="quantity" value="{{ item.quantity }}" data-item_id="{{ item.id }}" data-item_price="{{ item.product.price }}">
+                                                <input type="text" name="quantity" value="{{ item.quantity }}" data-item_id="{{ item.id }}" data-item_price="{{ item.price }}">
                                                 <button class="btn-plus" data-action="trigger_input_event"><i class="fa fa-plus"></i></button>
                                             </div>
                                         </td>
                                         <td class="item-total-price" data-item_id="{{ item.id }}">
-                                            {{ item.total_price }}грн.
+                                            {{ item.total_price|pretty_price }} грн.
                                         </td>
                                         <td>
                                             <button type="submit" data-action="delete" data-item_id="{{ item.id }}"><i class="far fa-trash-alt"></i></button>
@@ -92,13 +93,13 @@
                                 <div class="cart-content">
                                     <h1>Корзина</h1>
                                     {% for item in items %}
-                                    <p data-item_id="{{ item.id }}">{{ item.product.title }} <span>X {{ item.product.price }}грн.</span> <span class="quantity" data-item_id="{{ item.id }}" style="margin-right: 5px;">{{ item.quantity }}</span></p>
+                                    <p data-item_id="{{ item.id }}">{{ item.product.title }} <span>X {{ item.price|pretty_price }} грн.</span> <span class="quantity" data-item_id="{{ item.id }}" style="margin-right: 5px;">{{ item.quantity }}</span></p>
                                         <p data-item_id="{{ item.id }}">{% if item.size %}Размер: {{ item.size }}{% endif %} {% if item.color %}Цвет: {{ item.color }}{% endif %}</p>
                                         {% if not forloop.last %}
                                             <br data-item_id="{{ item.id }}">
                                         {% endif %}
                                     {% endfor %}
-                                    <h2>Общая стоимость корзины<span class="cart-total-price">{{ cart.total_price }}грн.</span></h2>
+                                    <h2>Общая стоимость корзины<span class="cart-total-price">{{ cart.total_price|pretty_price }}грн.</span></h2>
                                 </div>
                                 <div class="cart-btn text-center">
                                     <form action="{% url 'checkout' %}" method="get">
