@@ -264,3 +264,69 @@
 .category_search_panel_item:hover {
     background-color: grey;
 }
+
+/**********************************/
+/******** Product Item CSS ********/
+/**********************************/
+
+.product-item .product-sizes {
+    color: white;
+    background-color: black;
+    padding: 5px 20px;
+    font-size: 16px;
+    transition: all .3s;
+}
+
+.product-item:hover .product-sizes {
+    background: #FF6F61;
+}
+
+.product-item .product-price {
+    padding-top: 10px;
+}
+
+.product-item .product-colors {
+    z-index: 1;
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    width: 80px;
+    height: 80px;
+    color: white;
+    border: 2px solid black;
+    border-radius: 100%;
+    padding: 10px 5px;
+    background-color: black;
+    opacity: 0.7;
+    transition: all .3s;
+    font-size: 14px;
+}
+.product-item .product-colors div {
+    width: fit-content;
+    height: 20px;
+    max-width: 70px;
+    margin: 20px auto;
+}
+.product-item:hover .product-colors {
+    background-color: #FF6F61;
+    border-color: #FF6F61;
+}
+
+/**********************************/
+/******** END Product Item CSS ********/
+/**********************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

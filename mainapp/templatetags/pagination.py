@@ -17,7 +17,11 @@ def pagination(context, paginator_page):
                 full_url += f'?{parameter_key}={parameter_value}'
             else:
                 full_url += f'&{parameter_key}={parameter_value}'
-        full_url += '&'
+        if index == 0 and parameter_key == 'page':
+            '''Если в параметрах был только параметр page'''
+            full_url += '?'
+        else:
+            full_url += '&'
     else:
         full_url += '?'
 

@@ -22,13 +22,24 @@
             {% else %}
                 <img src="{{ image_url }}" alt="{{ image_alt }}">
             {% endif %}
+
+            {% if product.color_specifications %}
+                <div class="product-colors">
+                    <div>{% colors_count_representation product %}</div>
+                </div>
+            {% endif %}
         </a>
     </div>
+    <div class="product-sizes">
+        <div class="col text-center">
+            {% for size in product.size_specifications %}
+                <span>{{ size }}</span>
+            {% endfor %}
+        </div>
+    </div>
     <div class="product-price">
-        <div class="row">
-            <div class="col text-center">
-                <h3 style="font-size: 24px;">{{ product.price|pretty_price }} грн.</h3>
-            </div>
+        <div class="col text-center">
+            <h3 style="font-size: 24px;">{{ product.price|pretty_price }} грн.</h3>
         </div>
     </div>
 </div>

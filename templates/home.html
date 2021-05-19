@@ -6,7 +6,7 @@
         <!-- Main Slider Start -->
         <div class="header">
             <div class="container-fluid">
-                <div class="row">
+                <div class="row justify-content-center">
                     <div class="col-lg-3">
                         <div class="list-group">
                             {% for category in categories %}
@@ -27,45 +27,45 @@
                             {% endfor %}
                         </div>
                     </div>
-                        <!-- Side Bar Start -->
-                        <div class="col-lg-3">
-                            <div class="widget-slider">
-                                <div class="sidebar-slider normal-slider">
-                                    {% for product in side_products %}
-                                        {% include 'components/product_item.html' %}
-                                    {% endfor %}
-                                </div>
+                    <!-- Side Bar Start -->
+                    <div class="col-10 col-lg-3">
+                        <div class="widget-slider">
+                            <div class="sidebar-slider normal-slider">
+                                {% for product in side_products %}
+                                    {% include 'components/product_item.html' %}
+                                {% endfor %}
                             </div>
                         </div>
-                        <!-- Side Bar End -->
                     </div>
+                    <!-- Side Bar End -->
                 </div>
             </div>
+        </div>
         <!-- Main Slider End -->
         <hr>
         <!-- Feature Start-->
         <div class="feature">
             <div class="container-fluid">
                 <div class="row align-items-center">
-                    <div class="col-lg-3 col-md-6 feature-col">
+                    <div class="col-6 col-lg-3 col-md-6 feature-col">
                         <div class="feature-content">
                             <i class="fab fa-cc-mastercard"></i>
                             <h2>Надежная оплата</h2>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 feature-col">
+                    <div class="col-6 col-lg-3 col-md-6 feature-col">
                         <div class="feature-content">
                             <i class="fa fa-truck"></i>
                             <h2>Доставка по всей Украине</h2>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 feature-col">
+                    <div class="col-6 col-lg-3 col-md-6 feature-col">
                         <div class="feature-content">
                             <i class="fa fa-sync-alt"></i>
                             <h2>14 дней возврата</h2>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 feature-col">
+                    <div class="col-6 col-lg-3 col-md-6 feature-col">
                         <div class="feature-content">
                             <i class="fa fa-comments"></i>
                             <h2>Поддержка</h2>
@@ -79,7 +79,7 @@
         <!-- Call to Action Start -->
         <div class="call-to-action">
             <div class="container-fluid">
-                <div class="row align-items-center">
+                <div class="row justify-content-center">
                     <div class="col-md-6">
                         <h1>Пишите нам по любым вопросам</h1>
                     </div>
@@ -97,12 +97,14 @@
                 <div class="section-header">
                     <h1>Самые популярные</h1>
                 </div>
-                <div class="row align-items-center product-slider product-slider-4">
-                   {% for product in most_popular_products %}
-                    <div class="col-lg-3">
-                        {% include 'components/product_item.html' %}
+                <div class="row justify-content-center">
+                    <div class="row align-items-center product-slider product-slider-4 col-10 col-sm-12">
+                       {% for product in most_popular_products %}
+                        <div class="col-lg-3">
+                            {% include 'components/product_item.html' %}
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -129,12 +131,14 @@
                 <div class="section-header">
                     <h1>Новинки</h1>
                 </div>
-                <div class="row align-items-center product-slider product-slider-4">
-                   {% for product in recent_products %}
-                    <div class="col-lg-3">
-                        {% include 'components/product_item.html' %}
+                <div class="row justify-content-center">
+                    <div class="row align-items-center product-slider product-slider-4 col-10 col-sm-12">
+                       {% for product in recent_products %}
+                        <div class="col-lg-3">
+                            {% include 'components/product_item.html' %}
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
