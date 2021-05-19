@@ -44,10 +44,10 @@ class ReviewInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
 
-    list_display = ['category_title', 'title', 'price', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
-    list_display_links = ['category_title', 'title', 'price', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
-    search_fields = ['category__title', 'title', 'price', 'ratting']
-    list_filter = ['ratting', 'in_stock', 'created_at', 'updated_at']
+    list_display = ['category_category_title', 'category_title', 'title', 'price', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
+    list_display_links = ['category_category_title', 'category_title', 'title', 'price', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
+    search_fields = ['category__category__title', 'category__title', 'title', 'price', 'ratting']
+    list_filter = ['category__category__title', 'in_stock', 'created_at', 'updated_at']
 
     inlines = [
         ImageInline,
@@ -66,6 +66,10 @@ class ProductAdmin(admin.ModelAdmin):
     def category_title(self, obj):
         return obj.category.title
     category_title.short_description = 'Подкатегория'
+
+    def category_category_title(self, obj):
+        return obj.category.category.title
+    category_category_title.short_description = 'Категория'
 
 class ProductFeaturesInline(admin.TabularInline):
     model = ProductFeatures
@@ -189,7 +193,7 @@ class ProductSpecificationAdmin(admin.ModelAdmin):
         return obj.feature_value.value
     feature_value_value.short_description = 'Значение характеристики'
 
-class  ReviewAdmin(admin.ModelAdmin):
+class ReviewAdmin(admin.ModelAdmin):
     list_display = ['product_title', 'user', 'first_name', 'second_name', 'ratting', 'created_at']
     list_display_links = ['product_title', 'user', 'first_name', 'second_name', 'ratting', 'created_at']
     search_fields = ['product__title', 'user__email',  'first_name', 'second_name', 'ratting']

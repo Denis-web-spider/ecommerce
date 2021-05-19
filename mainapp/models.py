@@ -103,6 +103,10 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория товара')
     title = models.CharField(max_length=255, verbose_name='Подкатегория товара')
@@ -167,14 +171,18 @@ class SubCategory(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'Подкатегория'
+        verbose_name_plural = 'Подкатегории'
+
 class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     category = models.ForeignKey(SubCategory, verbose_name='Подкатегория товара', on_delete=models.CASCADE)
     title = models.CharField(max_length=255, verbose_name='Название товара')
     description = models.TextField(verbose_name='Описание товара', blank=True)
-    morga = models.PositiveIntegerField(default=25, verbose_name='Моржа в %')
-    true_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена на товар без моржы')
-    price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена на товар')
+    markup = models.PositiveIntegerField(default=25, verbose_name='Наценка в %')
+    true_price = models.IntegerField(verbose_name='Цена на товар без наценки')
+    price = models.IntegerField(verbose_name='Цена на товар')
     ratting = models.FloatField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)], verbose_name='Оценка')
     in_stock = models.BooleanField(verbose_name='В наличиии', default=True)
     created_at = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
@@ -220,8 +228,81 @@ class Product(models.Model):
     def rounded_ratting(self):
         return round(self.ratting)
 
-    def get_price_with_morga(self):
-        return round(self.true_price / 100 * self.morga + self.true_price) + 0.99
+    def get_price_with_markup(self):
+        return round(self.true_price / 100 * self.markup + self.true_price)
+
+    def change_markup(self):
+        main_category_title = self.category.category.title
+        subcategory_title = self.category.title
+
+        if main_category_title == 'Аксессуары':
+            if self.true_price < 50:
+                self.markup = 200
+            elif self.true_price < 100:
+                self.markup = 150
+            elif self.true_price < 150:
+                self.markup = 100
+
+        if main_category_title == 'Батал':
+            if self.true_price < 100:
+                self.markup = 100
+            elif self.true_price < 50:
+                self.markup = 50
+
+        if main_category_title == 'Детская обувь':
+            if self.true_price < 75:
+                self.markup = 100
+            elif self.true_price < 125:
+                self.markup = 50
+
+        if main_category_title == 'Детская одежда':
+            if self.true_price < 100:
+                self.markup = 50
+
+        if main_category_title == '	Женская обувь':
+            if self.true_price < 50:
+                self.markup = 150
+            elif self.true_price < 100:
+                self.markup = 100
+
+        if main_category_title == 'Женская одежда' or '	Мужская одежда':
+            if self.true_price < 100:
+                self.markup = 100
+
+        if (main_category_title == 'Женская одежда' and subcategory_title == 'Белье') or \
+           (main_category_title == 'Мужская одежда' and subcategory_title == 'Белье'):
+            if self.true_price < 50:
+                self.markup = 400
+            elif self.true_price < 100:
+                self.markup = 200
+
+        if main_category_title == 'Мужская обувь':
+            if self.true_price < 50:
+                self.markup = 100
+            elif self.true_price < 100:
+                self.markup = 50
+
+        if main_category_title == 'Новинки':
+            if self.true_price < 50:
+                self.markup = 100
+            elif self.true_price < 100:
+                self.markup = 50
+
+        if main_category_title == 'Подростковая обувь':
+            if self.true_price < 100:
+                self.markup = 50
+
+        if main_category_title == 'Подростковая одежда':
+            if self.true_price < 50:
+                self.markup = 100
+            elif self.true_price < 100:
+                self.markup = 50
+
+        else:
+            if self.true_price < 50:
+                self.markup = 100
+            elif self.true_price < 100:
+                self.markup = 50
 
     def get_related_products(self, count=10):
         products_with_four_star_or_greater = Product.objects.filter(category=self.category, ratting__gte=3.5).exclude(id=self.id).order_by('-ratting')[:count]
@@ -235,8 +316,13 @@ class Product(models.Model):
         return reverse('product_detail', args=[self.category.category.slug, self.category.slug, str(self.id)])
 
     def save(self, *args, **kwargs):
-        self.price = self.get_price_with_morga()
+        self.change_markup()
+        self.price = self.get_price_with_markup()
         super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'Продукт'
+        verbose_name_plural = 'Продукты'
 
 class Review(models.Model):
     product = models.ForeignKey(Product, verbose_name='Продукт', related_name='reviews', on_delete=models.CASCADE)
@@ -258,6 +344,11 @@ class Review(models.Model):
         super().delete()
         self.product.average_ratting()
 
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+        ordering = ['-product__created_at', '-created_at']
+
 class Image(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
     image = models.ImageField(upload_to='images', verbose_name='Изображение товара')
@@ -277,11 +368,19 @@ class Image(models.Model):
     def __str__(self):
         return f'Изображение для {self.product.title}'
 
+    class Meta:
+        verbose_name = 'Изображение'
+        verbose_name_plural = 'Изображения'
+
 class SpecificationValue(models.Model):
     value = models.CharField(max_length=400, verbose_name='Значение характеристики')
 
     def __str__(self):
         return self.value
+
+    class Meta:
+        verbose_name = 'Значение характеристики'
+        verbose_name_plural = 'Значения характеристик'
 
 class ProductFeatures(models.Model):
 
@@ -290,6 +389,10 @@ class ProductFeatures(models.Model):
 
     def __str__(self):
         return f'"{self.category.category.title}" | "{self.category.title}" | "{self.feature_key}"'
+
+    class Meta:
+        verbose_name = 'Ключ характеристики'
+        verbose_name_plural = 'Ключи характеристик'
 
 class ProductSpecification(models.Model):
     product = models.ForeignKey(Product, verbose_name='Продукт', on_delete=models.CASCADE, related_name='specifications')
@@ -305,6 +408,10 @@ class ProductSpecification(models.Model):
     def value(self):
         return self.feature_value.value
 
+    class Meta:
+        verbose_name = 'Характеристика товара'
+        verbose_name_plural = 'Характеристики товаров'
+
 class ProductMeasurementsKeys(models.Model):
 
     measurement_key = models.CharField(max_length=50, verbose_name='Ключ измерения')
@@ -312,6 +419,10 @@ class ProductMeasurementsKeys(models.Model):
 
     def __str__(self):
         return f'"{self.category.category.title}" | "{self.category.title}" | "{self.measurement_key}"'
+
+    class Meta:
+        verbose_name = 'Ключ измерения'
+        verbose_name_plural = 'Ключи измерений'
 
 class ProductMeasurements(models.Model):
     product = models.ForeignKey(Product, verbose_name='Продукт', on_delete=models.CASCADE, related_name='measurements')
@@ -326,6 +437,10 @@ class ProductMeasurements(models.Model):
 
     def value(self):
         return self.measurement_value.value
+
+    class Meta:
+        verbose_name = 'Измерение товара'
+        verbose_name_plural = 'Измерения товаров'
 
 class ReturnLetter(models.Model):
 
@@ -345,6 +460,10 @@ class ReturnLetter(models.Model):
     def __str__(self):
         return f'{self.email} | {self.created_at} | {self.completed}'
 
+    class Meta:
+        verbose_name = 'Заявление на возврат товара'
+        verbose_name_plural = 'Заявления на возврат товаров'
+
 class ReturnItem(models.Model):
 
     REASON_CHOICES = [
@@ -363,3 +482,7 @@ class ReturnItem(models.Model):
 
     def __str__(self):
         return f'{self.return_letter.id} | {self.product_name} | {self.return_reason}'
+
+    class Meta:
+        verbose_name = 'Товар на возврат'
+        verbose_name_plural = 'Товары на возврат'

@@ -40,7 +40,7 @@ class CartAPIView(APIView):
         cart = get_cart(request)
         cart_info = {
             'cart_items_quantity': cart.total_quantity,
-            'cart_total_price' : cart.total_price,
+            'cart_total_price': cart.total_price,
         }
 
         return Response(cart_info)

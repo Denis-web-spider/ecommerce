@@ -57,11 +57,11 @@ class OrderAdmin(admin.ModelAdmin):
     colored_status.short_description = 'Статус заказа'
 
 class CartItemAdmin(admin.ModelAdmin):
-    list_display = ['cart_owner', 'product_title', 'quantity', 'size', 'color', 'total_price']
-    list_display_links = ['cart_owner', 'product_title', 'quantity', 'size', 'color', 'total_price']
+    list_display = ['cart_owner', 'product_title', 'quantity', 'size', 'color', 'price', 'total_price']
+    list_display_links = ['cart_owner', 'product_title', 'quantity', 'size', 'color', 'price', 'total_price']
     search_fields = ['cart__owner__email', 'product__title', 'size', 'color']
     list_filter = ['updated_at']
-    fields = ['cart', 'order', 'product', 'quantity', 'size', 'color', 'total_price']
+    fields = ['cart', 'order', 'product', 'quantity', 'size', 'color', 'price', 'total_price']
     readonly_fields = ['cart', 'order', 'product']
     def cart_owner(self, obj):
         return obj.cart.owner.email

@@ -11,7 +11,7 @@ class Cart(models.Model):
     owner = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Пользователь')
     completed = models.BooleanField(default=False, verbose_name='Завершена')
     total_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)], verbose_name='Общее количество товара в корзине')
-    total_price = models.DecimalField(default=0, max_digits=9, decimal_places=2, verbose_name='Общая стоимость корзины')
+    total_price = models.IntegerField(default=0, verbose_name='Общая стоимость корзины')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создана')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Обновлена')
 
@@ -38,6 +38,11 @@ class Cart(models.Model):
     def __str__(self):
         return f'{self.id} | {self.total_price} | {self.total_price} | {self.created_at} | {self.updated_at}'
 
+    class Meta:
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзины'
+        ordering = ['-id']
+
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, verbose_name='Корзина', related_name='items')
     order = models.ForeignKey('Order', on_delete=models.CASCADE, null=True, blank=True, verbose_name='Заказ', related_name='order_items')
@@ -45,15 +50,17 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1, validators=[MinValueValidator(0)], verbose_name='Количество товара')
     size = models.CharField(max_length=10, null=True, blank=True, verbose_name='Размер')
     color = models.CharField(max_length=100, null=True, blank=True, verbose_name='Цвет')
-    total_price = models.DecimalField(default=0, max_digits=9, decimal_places=2, verbose_name='Общая стоимость товара')
+    price = models.IntegerField(verbose_name='Стоимость товара')
+    total_price = models.IntegerField(default=0, verbose_name='Общая стоимость товара')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создана')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Обновлена')
 
     def save(self, *args, **kwargs):
+        self.price = self.product.price
         if self.quantity == 0:
             self.delete()
         else:
-            self.total_price = self.product.price * self.quantity
+            self.total_price = self.price * self.quantity
             super().save(*args, **kwargs)
             if not self.order:
                 self.cart.get_total_quantity_and_price()
@@ -64,6 +71,11 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f'{self.cart.id} | {self.product.title} | {self.quantity} | {self.total_price} | {self.created_at} | {self.updated_at}'
+
+    class Meta:
+        verbose_name = 'Продукт корзины'
+        verbose_name_plural = 'Продукты корзины'
+        ordering = ['-cart__id']
 
 class Order(models.Model):
     NEW = 'new'
@@ -101,3 +113,8 @@ class Order(models.Model):
 
     def __str__(self):
         return f'{self.first_name} | {self.second_name} | {self.phone_number} | {self.email} | {self.status}'
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+        ordering = ['-created_at']

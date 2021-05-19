@@ -195,7 +195,7 @@ class ClientOrdersView(LoginRequiredMixin, View):
 
         user = request.user
         cart = get_cart(request)
-        orders = Order.objects.filter(cart__owner=user).order_by('-created_at')
+        orders = Order.objects.filter(cart__owner=user)
 
         paginator = Paginator(orders, 15)
         page_number = int(request.GET.get('page', 1))
