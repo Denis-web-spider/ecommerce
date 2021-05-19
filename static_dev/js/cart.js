@@ -96,12 +96,14 @@ function empty_cart () {
 async function update_item_data (item_object) {
     const csrftoken = getCookie('csrftoken');
 
+    let fetch_url = window.location.origin + '/api/v1/cart/';
+
     let form = new FormData(document.createElement('form'));
     for (let key in item_object) {
         form.append(key, item_object[key]);
     }
 
-    let response = await fetch('http://localhost:8000/api/v1/cart/', {
+    let response = await fetch(fetch_url, {
       method: 'PATCH',
       mode: 'same-origin',
       headers: {
@@ -126,10 +128,12 @@ async function delete_item (target) {
         item_data.remove();
     }
 
+    let fetch_url = window.location.origin + '/api/v1/cart/';
+
     let form = new FormData(document.createElement('form'));
     form.append('id', item_id)
 
-    let response = await fetch('http://localhost:8000/api/v1/cart/', {
+    let response = await fetch(fetch_url, {
       method: 'DELETE',
       mode: 'same-origin',
       headers: {

@@ -16,9 +16,11 @@ async function process_product_form (event) {
         quantity_input.dispatchEvent(blur_event);
     }
 
+    let fetch_url = window.location.origin + '/api/v1/cart/';
+
     let form_data = new FormData(product_form);
 
-    let response = await fetch('http://localhost:8000/api/v1/cart/', {
+    let response = await fetch(fetch_url, {
         method: 'POST',
         mode: 'same-origin',
         headers: {
@@ -93,9 +95,11 @@ async function process_add_review_form (event) {
         form.closest('div[class~=modal]').querySelector('button.close').dispatchEvent(click_event);
     }
 
+    let fetch_url = window.location.origin + '/api/v1/review/';
+
     let form_data = new FormData(form);
 
-    let response = await fetch('http://localhost:8000/api/v1/review/', {
+    let response = await fetch(fetch_url, {
         method: 'POST',
         mode: 'same-origin',
         headers: {
@@ -133,9 +137,11 @@ async function process_delete_review_form (event) {
 
     current_user_review.remove();
 
+    let fetch_url = window.location.origin + '/api/v1/review/';
+
     let form_data = new FormData(form);
 
-    let response = await fetch('http://localhost:8000/api/v1/review/', {
+    let response = await fetch(fetch_url, {
         method: 'DELETE',
         mode: 'same-origin',
         headers: {

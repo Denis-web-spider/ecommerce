@@ -60,6 +60,8 @@ document.addEventListener('DOMContentLoaded', function (event) {
         search_category = search_query.dataset.category;
         search_subcategory = search_query.dataset.subcategory;
 
+        let fetch_url = window.location.origin + '/api/v1/search/';
+
         search_query_old_value = search_query.value;
         if (!search_query.value) {
             let search_panel = document.querySelector('div[class=search_panel]');
@@ -70,13 +72,13 @@ document.addEventListener('DOMContentLoaded', function (event) {
         }
         let response;
         if (search_category == 'all') {
-            response = await fetch(`http://localhost:8000/api/v1/search/?search_query=${search_query.value}&subsearch_query=${search_query.dataset.subsearch}`);
+            response = await fetch(fetch_url + `?search_query=${search_query.value}&subsearch_query=${search_query.dataset.subsearch}`);
         }else if (search_category && !search_subcategory) {
-            response = await fetch(`http://localhost:8000/api/v1/search/?search_query=${search_query.value}&category=${search_category}`);
+            response = await fetch(fetch_url + `?search_query=${search_query.value}&category=${search_category}`);
         } else if (search_subcategory) {
-            response = await fetch(`http://localhost:8000/api/v1/search/?search_query=${search_query.value}&category=${search_category}&subcategory=${search_subcategory}`);
+            response = await fetch(fetch_url + `?search_query=${search_query.value}&category=${search_category}&subcategory=${search_subcategory}`);
         } else {
-            response = await fetch(`http://localhost:8000/api/v1/search/?search_query=${search_query.value}`);
+            response = await fetch(fetch_url + `?search_query=${search_query.value}`);
         }
         let response_json = await response.json();
 
@@ -222,7 +224,9 @@ async function update_cart_info () {
     let cart_items_quantity = document.getElementById('cart-items-quantity');
     let cart_total_price = document.getElementById('cart-total-price');
 
-    let response = await fetch('http://localhost:8000/api/v1/cart/');
+    let fetch_url = window.location.origin + '/api/v1/cart/';
+    
+    let response = await fetch(fetch_url);
     let cart_info = await response.json();
 
     cart_items_quantity.textContent = '(' + cart_info['cart_items_quantity'] + ')';
