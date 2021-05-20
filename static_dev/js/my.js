@@ -225,7 +225,7 @@ async function update_cart_info () {
     let cart_total_price = document.getElementById('cart-total-price');
 
     let fetch_url = window.location.origin + '/api/v1/cart/';
-    
+
     let response = await fetch(fetch_url);
     let cart_info = await response.json();
 

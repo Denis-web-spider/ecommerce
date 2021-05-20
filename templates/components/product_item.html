@@ -2,7 +2,7 @@
 
 <div class="product-item">
     <div class="product-title">
-        <a href="{{ product.get_absolute_url }}" style="font-size: 12px;">{{ product.title|remove_code_from_product_title }}</a>
+        <a href="{{ product.get_absolute_url }}">{{ product.title|remove_code_from_product_title }}</a>
         <div class="ratting">
             {% if product.rounded_ratting != 0 %}
             <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
@@ -39,7 +39,7 @@
     </div>
     <div class="product-price">
         <div class="col text-center">
-            <h3 style="font-size: 24px;">{{ product.price|pretty_price }} грн.</h3>
+            <h3>{{ product.price|pretty_price }} грн.</h3>
         </div>
     </div>
 </div>

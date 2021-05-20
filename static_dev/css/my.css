@@ -311,11 +311,47 @@
     background-color: #FF6F61;
     border-color: #FF6F61;
 }
+.product-item {
+    font-size: 1rem;
+}
+.product-item .product-title a {
+    font-size: 0.8rem;
+}
 
 /**********************************/
 /******** END Product Item CSS ********/
 /**********************************/
 
+/**********************************/
+/******** Product Nav CSS ********/
+/**********************************/
+
+.product-nav {
+    padding: 0px 15px;
+}
+.product-nav .product-nav-item {
+    padding: 0px;
+}
+.product-nav .product-nav-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    color: #FF6F61;
+    background-color: #000000;
+    transition: all 0.3s;
+}
+.product-nav .product-nav-link.active {
+    color: #000000;
+    background-color: #FF6F61;
+}
+.product-nav .product-nav-link:hover {
+    color: #000000;
+    background-color: #FF6F61;
+}
+
+/**********************************/
+/******** END Product Nav CSS ********/
+/**********************************/
 
 
 

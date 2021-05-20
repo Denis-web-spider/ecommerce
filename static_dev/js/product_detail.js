@@ -1,11 +1,13 @@
 // Добавление товара в корзину
 let product_form = document.getElementById('add_to_cart_form');
 let quantity_input = product_form.elements.quantity;
+let product_nav = document.querySelector('.product-nav');
 
 product_form.addEventListener('submit', process_product_form);
 
 quantity_input.addEventListener('keydown', type_only_numbers);
 quantity_input.addEventListener('blur', process_quantity_input_blur);
+product_nav.addEventListener('click', toggle_navigation_button);
 
 async function process_product_form (event) {
     event.preventDefault();
@@ -344,3 +346,21 @@ function update_reviews_count (action) {
     }
     reviews_count_span.textContent = current_reviews_count;
 }
+
+// End Комментарий
+
+// Product nav
+
+function toggle_navigation_button (event) {
+    let navigation = this;
+    let target_navigation_link = event.target.closest('.product-nav-link');
+
+    let navigation_links = navigation.querySelectorAll('.product-nav-link');
+    for (let navigation_link of navigation_links) {
+        if (navigation_link != target_navigation_link) {
+            navigation_link.classList.remove('active');
+        }
+    }
+}
+
+// End product nav

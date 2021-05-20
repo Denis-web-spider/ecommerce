@@ -17,11 +17,11 @@
                     {% endblock slider %}
                     <!-- Main Slider End -->
                     <div class="col-lg-8">
-                        <div class="row">
+                        <div class="row justify-content-center">
                             {% block search %}
                             {% endblock search %}
                             {% for product in products %}
-                                <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                                <div class="col-10 col-sm-6 col-md-6 col-lg-4">
                                     <div class="widget-slider">
                                         <div class="sidebar-slider-my normal-slider">
                                             {% for image in product.images_for_category_list %}
