@@ -6,11 +6,9 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>{% block title %}E Store - eCommerce HTML Template{% endblock title %}</title>
+        <title>{% block title %}Base template{% endblock title %}</title>
         <meta name="google-site-verification" content="HpbzlWD86P_7nHgeo1GfX4yTz4DUTKgcP7L4kEV6sMA" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <meta content="eCommerce HTML Template Free Download" name="keywords">
-        <meta content="eCommerce HTML Template Free Download" name="description">
 
         <!-- Favicon -->
         <link href="{% static 'img/dshop_icon.png' %}" rel="icon">
@@ -63,6 +61,7 @@
                             {% url 'cart' as cart_url %}
                             {% url 'client_account' as client_account_url %}
                             {% url 'client_orders' as client_orders_url %}
+                            {% url 'return_letter' as return_letter_url %}
                             {% url 'csv_import' as csv_import_url %}
                             {% url 'client_orders_for_admin' as client_orders_for_admin_url %}
 
@@ -72,6 +71,7 @@
                             {% if user.is_authenticated %}
                                 <a href="{% url 'client_orders' %}" class="nav-item nav-link {% if request.path == client_orders_url %}active{% endif %}">Мои заказы</a>
                             {% endif %}
+                            <a href="{% url 'return_letter' %}" class="nav-item nav-link {% if request.path == return_letter_url %}active{% endif %}">Заявление на возврат (обмен)</a>
                             {% if user.is_superuser %}
                                 <div class="nav-item dropdown">
                                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Для админа</a>

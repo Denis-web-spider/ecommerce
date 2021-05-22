@@ -190,6 +190,7 @@ class ReturnItemForm(forms.ModelForm):
             {
                 'class': 'form-control',
                 'form': 'return_letter_form',
+                'step': '1',
                 'placeholder': '7590',
             }
         )
@@ -232,4 +233,4 @@ def populate_form_choice_fields(form, product):
         form.fields['color'].required = False
     return form
 
-ReturnItemFormset = formset_factory(ReturnItemForm, extra=10)
+ReturnItemFormset = formset_factory(ReturnItemForm, extra=3)

@@ -1,0 +1,11 @@
+{% extends 'mails/base_mail.html' %}
+
+{% block title %}Payment success result mail{% endblock title %}
+
+{% block content %}
+    <p style="margin-top: 0px;">Уважаемый(ая), {{ order.second_name }} {{ order.first_name }} {{ order.middle_name }}.</p>
+
+    <p>Статус оплаты заказа №{{ order.number }} был изменен на "Оплачено".</p>
+
+    <p>С уважением, команда DwsShop</p>
+{% endblock content %}

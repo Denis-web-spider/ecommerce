@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %}Заявление на возврат товара{% endblock title %}
+{% load static %}
+
+{% block title %}Заявление на возврат (обмен) товара{% endblock title %}
 
 {% block content %}
 {% if messages %}
@@ -39,6 +41,9 @@
             </p>
             <p>
                 Получатель Петров Олег Николаевич, тел. (093) 204-05-40 (указать этот номер при отправке посылки, звонки не принимаются).
+            </p>
+            <p>
+                Подробнее о возврате (обмене) товара можно почитать на страничке <a href="{% url 'return_policy' %}">"Возврат товара"</a>.
             </p>
         </div>
         <br><br>
@@ -124,8 +129,7 @@
                                 {% endfor %}
                             </div>
                             <div class="col-md-12 text-center">
-                                <table class="table">
-                                    <caption>Список товаров</caption>
+                                <table class="table" id="return-product-table">
                                     <thead>
                                         <tr>
                                             <th scope="col">№</th>
@@ -137,7 +141,7 @@
                                     </thead>
                                     <tbody>
                                         {% for item_form in formset.forms %}
-                                        <tr>
+                                        <tr data-count="{{ forloop.counter }}">
                                             <th scope="row">{{ forloop.counter }}</th>
                                             <td>
                                                 {{ item_form.product_name }}
@@ -168,6 +172,11 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div class="col-md-12 mb-3">
+                                <button type="button" class="btn btn-outline success" data-action="add-return-product-item" style="width: 100%">
+                                    Добавить еще один товар
+                                </button>
+                            </div>
                             <div class="col-md-12">
                                 {{ form.comment.label_tag }}
                                 {{ form.comment }}
@@ -189,3 +198,7 @@
 </div>
 
 {% endblock content %}
+
+{% block script %}
+    <script src="{% static 'js/return_letter.js' %}"></script>
+{% endblock script %}

@@ -22,12 +22,15 @@ class CartAdmin(admin.ModelAdmin):
 
 class OrderAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'full_name', 'colored_status', 'payment_status', 'payment_method', 'created_at']
-    list_display_links = ['id', 'full_name', 'colored_status', 'created_at', 'payment_status', 'payment_method']
+    list_display = ['number', 'TTN', 'full_name', 'colored_status', 'payment_status', 'payment_method', 'created_at']
+    list_display_links = ['number', 'TTN', 'full_name', 'colored_status', 'created_at', 'payment_status', 'payment_method']
     list_filter = ['status', 'created_at', 'payment_status', 'payment_method']
-    search_fields = ['first_name', 'middle_name', 'second_name', 'email']
+    search_fields = ['number', 'TTN', 'first_name', 'middle_name', 'second_name', 'email']
     inlines = [CartItemTabularForOrderAdmin]
     fieldsets = (
+        ('Номер заказа', {
+            'fields': ('number', 'TTN')
+        }),
         ('ФИО', {
             'fields': ('second_name', 'first_name', 'middle_name')
         }),

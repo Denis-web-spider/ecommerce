@@ -1,0 +1,8 @@
+
+{% load status %}
+
+Уважаемый(ая), {{ order.second_name }} {{ order.first_name }} {{ order.middle_name }}.
+
+Статус заказа №{{ order.number }} был изменен на "{{ order.status|translate_status }}".
+
+С уважением, команда DwsShop

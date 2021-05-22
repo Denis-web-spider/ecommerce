@@ -1,0 +1,102 @@
+{% extends 'mails/base_mail.html' %}
+
+{% block title %}Return letter mail{% endblock title %}
+
+{% block content %}
+    <table class="base-table">
+        <thead>
+            <tr>
+                <th colspan="2">Детали письма на возврат (обмен)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="font-weight: bold">
+                    ФИО отправителя письма:
+                </td>
+                <td>
+                    {{ return_letter.last_name }} {{ return_letter.first_name }} {{ return_letter.middle_name }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Электронная почта отправителя письма:
+                </td>
+                <td>
+                    {{ return_letter.email }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Номер телефона отправителя письма:
+                </td>
+                <td>
+                    {{ return_letter.phone_number }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Дата получения заказа:
+                </td>
+                <td>
+                    {{ return_letter.receive_order_date }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    № заказа (или номер ТТН «Новой Почты»):
+                </td>
+                <td>
+                    {{ return_letter.order_number }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Номер банковской карты:
+                </td>
+                <td>
+                    {{ return_letter.bank_card_number }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    ФИО владельца банковской карты:
+                </td>
+                <td>
+                    {{ return_letter.fml_card_owner }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Комментарий:
+                </td>
+                <td>
+                    {{ return_letter.comment }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <table class="base-table">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Наименование</th>
+                <th>Кол-во, шт.</th>
+                <th>Цена, грн.</th>
+                <th>Код причины</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in return_letter.items.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.total_price }}</td>
+                    <td>{{ item.return_reason }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

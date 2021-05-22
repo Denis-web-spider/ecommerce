@@ -1,0 +1,132 @@
+{% extends 'mails/base_mail.html' %}
+
+{% load product_tags %}
+
+{% block title %}Checkout mail{% endblock title %}
+
+{% block content %}
+    <p style="margin-top: 0px;">
+        Благодорим за то, что воспользовались услугами нашего магазина.<br>
+        Перед отправкой Вы получите смс-сообщение с номером ТТН.<br>
+        Если возникнут вопросы, Вы можете:<br>
+        - написать нам на почту: dws.shopp@gmail.com<br>
+        - ответить на это письмо<br>
+        - позвонить по номеру +380674278265<br>
+    </p>
+    <p>
+        Внимание! Забрать посылку в отделении "Новой Почты" Вы можете в <strong>течение 5 дней</strong> с момента ее прибытия.
+        После 5 дней хранения в отделении "Новой Почты" посылка будет <strong>автоматически возвращена</strong> отправителю.
+    </p>
+    <p>
+        Подробнее про оплату заказа, Вы можете почитать, перейдя по ссылке:
+        <a href="https://dws-shop.com.ua{% url 'payment_policy' %}">https://dws-shop.com.ua{% url 'payment_policy' %}</a>
+    </p>
+    <p>
+        Про возврат/обмен товара, Вы можете почитать, перейдя по ссылке:
+        <a href="https://dws-shop.com.ua{% url 'return_policy' %}">https://dws-shop.com.ua{% url 'return_policy' %}</a>
+    </p>
+     <table class="base-table">
+        <thead>
+            <tr>
+                <th colspan="2">Детали заказа</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="font-weight: bold">
+                    Номер заказа:
+                </td>
+                <td>
+                    {{ order.number|pretty_price }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    ФИО:
+                </td>
+                <td>
+                    {{ order.second_name }} {{ order.first_name }} {{ order.middle_name }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Номер телефона:
+                </td>
+                <td>
+                    {{ order.phone_number }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Электронная почта:
+                </td>
+                <td>
+                    {{ order.email }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Область:
+                </td>
+                <td>
+                    {{ order.region }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Населенный пункт:
+                </td>
+                <td>
+                    {{ order.locality }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Отделение новой почты:
+                </td>
+                <td>
+                    {{ order.post_office }}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">
+                    Комментарий:
+                </td>
+                <td>
+                    {{ order.comment }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <table class="base-table">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Наименование</th>
+                <th>Кол-во, шт.</th>
+                <th>Размер</th>
+                <th>Цвет</th>
+                <th>Цена</th>
+                <th>Итого</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.cart.items.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.product.title }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.size }}</td>
+                    <td>{{ item.color }}</td>
+                    <td>{{ item.price|pretty_price }} грн.</td>
+                    <td>{{ item.total_price|pretty_price }} грн.</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="6" style="font-weight: bold; text-align: right;">Сумма:</td>
+                <td>{{ order.cart.total_price|pretty_price }} грн.</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock content %}

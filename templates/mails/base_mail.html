@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Base mail template{% endblock title %}</title>
+        <meta name="google-site-verification" content="HpbzlWD86P_7nHgeo1GfX4yTz4DUTKgcP7L4kEV6sMA" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+        <style>
+            a {
+                color: #FF6F61;
+                text-decoration: none;
+            }
+            .body {
+                background-color: #f3f6ff;
+                font-family: 'Open Sans', sans-serif;
+                font-weight: 400;
+                font-size: 12px;
+                color: black;
+            }
+            .black-line {
+                min-height: 10px;
+                background-color: black;
+            }
+            .red-line {
+                min-height: 10px;
+                background-color: #FF6F61;
+            }
+            .main-container {
+                background-color: white;
+                margin: 0px auto;
+                max-width: 700px;
+                border-radius: 10px;
+            }
+            .logo {
+                padding: 10px 70px;
+            }
+            .logo img {
+                max-height: 60px;
+            }
+            .content {
+                padding: 10px;
+            }
+            .base-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .base-table * {
+                text-align: left;
+                border: 1px solid black;
+            }
+            .base-table thead {
+                background-color: #FF6F61;
+                color: white;
+                font-weight: bold;
+            }
+            .base-table * {
+                padding: 7px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+    <div class="body">
+        <div class="main-container">
+            <div class="red-line" style="border-top-left-radius: 10px; border-top-right-radius: 10px"></div>
+            <div class="red-line"></div>
+
+            <div class="logo">
+                <a href="https://dws-shop.com.ua/">
+                    <img src="https://dws-shop.com.ua/static/img/dshop_logo.png" alt="logo">
+                </a>
+            </div>
+
+            <div class="content">
+                {% block content %}
+                {% endblock content %}
+            </div>
+
+            <div class="black-line"></div>
+            <div class="black-line" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px"></div>
+        </div>
+    </div>
+
+    </body>
+</html>

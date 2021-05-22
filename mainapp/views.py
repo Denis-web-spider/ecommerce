@@ -1,13 +1,16 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage
 from django.contrib import messages
 from django.conf import settings
-from django.core.mail import send_mail
 
 from .models import Category, Product, SubCategory, ReturnLetter, ReturnItem
 from .mixins import LeftSideBarMixin
 from .forms import ProductForm, SearchForm, populate_form_choice_fields, ReturnLetterForm, ReturnItemFormset
+from .utils import get_queryset_that_contains_in_title_every_word_in_search_string
+from .mails import send_return_letter_mail_for_admin
+
+from cart.models import Order
 
 from cart.views import get_cart
 
@@ -21,19 +24,6 @@ SORT_CHOICES = [
         ('-price', 'Цена (по убыванию)'),
         ('price', 'Цена (по возрастанию)')
     ]
-
-def get_queryset_that_contains_in_title_every_word_in_search_string(query_set, search_string):
-    '''
-    Принимает queryset например "Product.objects.all()" и строку например "Джинсы рваные"
-
-    Возвращает queryset, в котором есть каждое слово из search_string
-
-    return:  Product.objects.all().filter(title__icontains='Джинсы').filter(title__icontains='рваные')
-    '''
-    result_queryset = query_set
-    for word in search_string.strip().split():
-        result_queryset = result_queryset.filter(title__icontains=word)
-    return result_queryset
 
 class HomePageView(LeftSideBarMixin, View):
 
@@ -317,91 +307,11 @@ class ReturnLetterView(View):
                         item.save()
 
                 messages.info(request, 'Ваше заявление на возврат товара успешно отправлено')
-                message, html_message = self.get_message_and_html_message_for_mail(return_letter)
-                send_mail(
-                    subject=f'Заявление на возврат от {return_letter.first_name} {return_letter.last_name}',
-                    message=message,
-                    from_email=None,
-                    recipient_list=[settings.ADMIN_EMAIL],
-                    html_message=html_message,
-                )
-        return render(request, 'information/return_letter.html', context)
 
-    def get_message_and_html_message_for_mail(self, return_letter):
-        """Принимает return_letter и возвращает (message, html_message)"""
-        r = return_letter
-        message = (
-            f"""
-            ФИО отправителя письма: {r.last_name} {r.first_name} {r.middle_name}
-            
-            Электронная почта отправителя письма: {r.email}
-            
-            Номер телефона отправителя письма: {r.phone_number}
-            
-            Дата получения заказа: {r.receive_order_date}
-            
-            № заказа (или номер ТТН «Новой Почты»): {r.order_number}
-            
-            Номер банковской карты: {r.bank_card_number}
-            
-            ФИО владельца банковской карты: {r.fml_card_owner}
-            
-            Комментарий: {r.comment}
-            """
-        )
-        html_message = (
-            f"""
-            <p>ФИО отправителя письма: {r.last_name} {r.middle_name} {r.last_name}</p>
-            <br>
-            <p>Электронная почта отправителя письма: {r.email}</p>
-            <br>
-            <p>Номер телефона отправителя письма: {r.phone_number}</p>
-            <br>
-            <p>Дата получения заказа: {r.receive_order_date}</p>
-            <br>
-            <p>№ заказа (или номер ТТН «Новой Почты»): {r.order_number}</p>
-            <br>
-            <p>Номер банковской карты: {r.bank_card_number}</p>
-            <br>
-            <p>ФИО владельца банковской карты: {r.fml_card_owner}</p>
-            <br>
-            <p>Комментарий: {r.comment}</p>
-            <br>
-            <table class="table">
-                <caption>Список товаров</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">№</th>
-                        <th scope="col">Наименование</th>
-                        <th scope="col">Кол-во, шт.</th>
-                        <th scope="col">Цена, грн.</th>
-                        <th scope="col">Код причины возвращения</th>
-                    </tr>
-                </thead>
-                <tbody>
-            """
-        )
-        for index, item in enumerate(r.items.all()):
-            item_number = index + 1
-            message += f'\n{item.product_name} {item.quantity}шт. {item.total_price}грн. {item.return_reason}'
-            html_message += (
-                f"""
-                <tr>
-                    <td>{item_number}</td>
-                    <td>{item.product_name}</td>
-                    <td>{item.quantity}</td>
-                    <td>{item.total_price}</td>
-                    <td>{item.return_reason}</td>
-                </tr>
-                """
-            )
-        html_message += (
-            f"""
-                </tbody>
-            </table>
-            """
-        )
-        return message, html_message
+                send_return_letter_mail_for_admin(return_letter)
+
+                return redirect(reverse('return_letter'))
+        return render(request, 'information/return_letter.html', context)
 
 class PrivacyPolicyView(View):
 
@@ -441,3 +351,10 @@ class AboutUsView(View):
         context['shop_domain_name'] = settings.SHOP_DOMAIN_NAME
 
         return render(request, 'information/about_us.html', context)
+
+class TestView(View):
+    def get(self, request):
+        context = {}
+        order = Order.objects.last()
+        context['order'] = order
+        return render(request, 'mails/order_TTN_change_mails/order_TTN_change_mail.html', context)

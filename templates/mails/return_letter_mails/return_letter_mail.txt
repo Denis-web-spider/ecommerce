@@ -1,0 +1,19 @@
+ФИО отправителя письма: {{ return_letter.last_name }} {{ return_letter.first_name }} {{ return_letter.middle_name }}
+
+Электронная почта отправителя письма: {{ return_letter.email }}
+
+Номер телефона отправителя письма: {{ return_letter.phone_number }}
+
+Дата получения заказа: {{ return_letter.receive_order_date }}
+
+№ заказа (или номер ТТН «Новой Почты»): {{ return_letter.order_number }}
+
+Номер банковской карты: {{ return_letter.bank_card_number }}
+
+ФИО владельца банковской карты: {{ return_letter.fml_card_owner }}
+
+Комментарий: {{ return_letter.comment }}
+
+{% for item in return_letter.items.all %}
+{{ item.product_name }} {{ item.quantity }}шт. {{ item.total_price }}грн. {{ item.return_reason }}
+{% endfor %}

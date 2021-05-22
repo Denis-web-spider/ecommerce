@@ -10,7 +10,17 @@
         <table class="table-responsive">
             <tbody>
             <tr>
-                <td style="min-width: 240px">Имя</td>
+                <td style="min-width: 240px">Номер заказа</td>
+                <td>{{ order.number }}</td>
+            </tr>
+            {% if order.TTN != '00000000000000' %}
+                <tr>
+                    <td>Номер ТТН</td>
+                    <td>{{ order.TTN }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>Имя</td>
                 <td>{{ order.first_name }}</td>
             </tr>
             <tr>

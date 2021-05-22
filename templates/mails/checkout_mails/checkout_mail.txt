@@ -1,0 +1,32 @@
+{% load product_tags %}
+
+Благодорим за то, что воспользовались услугами нашего магазина.
+Перед отправкой Вы получите смс-сообщение с номером ТТН.
+Если возникнут вопросы, Вы можете:
+- написать нам на почту: dws.shopp@gmail.com
+- ответить на это письмо
+- позвонить по номеру +380674278265
+
+Внимание! Забрать посылку в отделении "Новой Почты" Вы можете в течение 5 дней с момента ее прибытия.
+После 5 дней хранения в отделении "Новой Почты" посылка будет автоматически возвращена отправителю.
+
+
+Номер заказа: {{ order.number|pretty_price }}
+
+ФИО: {{ order.second_name }} {{ order.first_name }} {{ order.middle_name }}
+
+Номер телефона: {{ order.phone_number }}
+
+Электронная почта: {{ order.email }}
+
+Новая почта:
+Область: {{ order.region }}
+Населенный пункт: {{ order.locality }}
+Отделение новой почты: {{ order.post_office }}
+
+Комментарий {{ order.comment }}
+
+{% for item in order.cart.items.all %}
+    {{ item.product.title }} {{ item.quantity }} {{ item.size }} {{ item.color }} {{ item.total_price|pretty_price }}
+{% endfor %}
+Всего товара в корзине {{ order.cart.total_quantity }}, общая сумма {{ order.cart.total_price|pretty_price }} грн.

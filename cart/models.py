@@ -1,9 +1,11 @@
 from django.db import models
 
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MinLengthValidator, MaxLengthValidator
 
 from mainapp.models import Product
+
+from .mails import send_order_status_change_mail, send_order_TTN_change_mail
 
 User = get_user_model()
 
@@ -96,6 +98,8 @@ class Order(models.Model):
         (LiqPay, 'Приват 24, картой VISA / MASTERCARD (LiqPay)'),
     ]
 
+    number = models.IntegerField(default=10000, verbose_name='№')
+    TTN = models.CharField(max_length=100, default='00000000000000', verbose_name='ТТН №', validators=[MinLengthValidator(14), MaxLengthValidator(14)])
     cart = models.OneToOneField(Cart, on_delete=models.CASCADE, verbose_name='Корзина')
     first_name = models.CharField(max_length=100, verbose_name='Имя')
     middle_name = models.CharField(max_length=100, verbose_name='Отчество')
@@ -111,8 +115,26 @@ class Order(models.Model):
     payment_status = models.BooleanField(default=False, verbose_name='Статус оплаты')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.latest_status = self.status
+        self.latest_TTN = self.TTN
+
     def __str__(self):
         return f'{self.first_name} | {self.second_name} | {self.phone_number} | {self.email} | {self.status}'
+
+    def set_order_number(self):
+        Order.objects.filter(id=self.id).update(number=10000 + self.id)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.set_order_number()
+        if self.latest_status != self.status:
+            self.latest_status = self.status
+            send_order_status_change_mail(self)
+        if self.latest_TTN != self.TTN:
+            self.latest_TTN = self.TTN
+            send_order_TTN_change_mail(self)
 
     class Meta:
         verbose_name = 'Заказ'
