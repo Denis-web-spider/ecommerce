@@ -186,24 +186,6 @@
     background: #FF6F61;
 }
 
-.product-sort select{
-    display: block;
-    width: 100%;
-    height: 35px;
-    padding: 5px 10px;
-    background: transparent;
-    border: 1px solid #353535;
-    text-align: left;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all .3s;
-}
-
-.product-sort select:hover{
-    color: #FF6F61;
-    border-color: #FF6F61;
-}
-
 .product-price-range input[type=text]{
     display: inline;
     width: 100%;
@@ -230,7 +212,11 @@
     margin-top: 15px;
 }
 
-.search_panel {
+/**********************************/
+/******** Search panel CSS ********/
+/**********************************/
+
+.search-panel {
     width: 100%;
     height: auto;
     background-color: white;
@@ -239,36 +225,37 @@
     z-index: 100;
     border: 1px solid #FF6F61;
     border-radius: 4px;
+    font-size: 0.8rem;
 }
 
-.search_panel_item {
+.search-panel-item {
     padding: 7px;
     padding-left: 27px;
     padding-right: 27px;
     color: #FF6F61;
 }
 
-.search_panel_item:hover {
+.search-panel-item:hover {
     color: white;
     background-color: #FF6F61;
 }
 
-.category_search_panel {
-    border: 1px solid grey;
-}
-
-.category_search_panel_item {
-    color: grey;
-}
-
-.category_search_panel_item:hover {
-    background-color: grey;
-}
+/**********************************/
+/******** END Search panel CSS ********/
+/**********************************/
 
 /**********************************/
 /******** Product Item CSS ********/
 /**********************************/
 
+.product-item .product-title {
+    min-height: 58px;
+    padding: 0px;
+}
+.product-item .product-title .row {
+    height: 58px;
+    padding: 0px 25px;
+}
 .product-item .product-sizes {
     color: white;
     background-color: black;
@@ -277,11 +264,22 @@
     transition: all .3s;
     min-height: 34px;
 }
-
 .product-item:hover .product-sizes {
     background: #FF6F61;
 }
-
+.product-item .ratting {
+    color: #FF6F61;
+    background-color: black;
+    text-align: center;
+    transition: all .3s;
+    min-height: 28px;
+    max-height: 28px;
+    padding-bottom: 4px;
+}
+.product-item:hover .ratting {
+    color: white;
+    background-color: #FF6F61;
+}
 .product-item .product-price {
     padding-top: 10px;
 }
@@ -354,9 +352,154 @@
 /******** END Product Nav CSS ********/
 /**********************************/
 
+/**********************************/
+/******** Loader ********/
+/**********************************/
 
+.lds-roller {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-roller div {
+  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 40px 40px;
+}
+.lds-roller div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  margin: -4px 0 0 -4px;
+}
+.lds-roller div:nth-child(1) {
+  animation-delay: -0.036s;
+}
+.lds-roller div:nth-child(1):after {
+  top: 63px;
+  left: 63px;
+}
+.lds-roller div:nth-child(2) {
+  animation-delay: -0.072s;
+}
+.lds-roller div:nth-child(2):after {
+  top: 68px;
+  left: 56px;
+}
+.lds-roller div:nth-child(3) {
+  animation-delay: -0.108s;
+}
+.lds-roller div:nth-child(3):after {
+  top: 71px;
+  left: 48px;
+}
+.lds-roller div:nth-child(4) {
+  animation-delay: -0.144s;
+}
+.lds-roller div:nth-child(4):after {
+  top: 72px;
+  left: 40px;
+}
+.lds-roller div:nth-child(5) {
+  animation-delay: -0.18s;
+}
+.lds-roller div:nth-child(5):after {
+  top: 71px;
+  left: 32px;
+}
+.lds-roller div:nth-child(6) {
+  animation-delay: -0.216s;
+}
+.lds-roller div:nth-child(6):after {
+  top: 68px;
+  left: 24px;
+}
+.lds-roller div:nth-child(7) {
+  animation-delay: -0.252s;
+}
+.lds-roller div:nth-child(7):after {
+  top: 63px;
+  left: 17px;
+}
+.lds-roller div:nth-child(8) {
+  animation-delay: -0.288s;
+}
+.lds-roller div:nth-child(8):after {
+  top: 56px;
+  left: 12px;
+}
+@keyframes lds-roller {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
+.loader-container {
+    position: absolute;
+    top: 0px;
+    left: 15px;
+    width: calc(100% - 30px);
+    height: calc(100% - 30px);
+    background-color: #FF6F61;
+    opacity: 0.2;
+    z-index: -1;
+}
+.loader-container.show {
+    z-index: 1
+}
+.loader-container div.row {
+    height: 100%;
+    padding: 0px 15px;
+}
 
+/**********************************/
+/******** END Loader ********/
+/**********************************/
+
+/**********************************/
+/******** Product Search CSS ********/
+/**********************************/
+
+.product-search-container {
+    padding: 30px;
+    margin-bottom: 30px;
+    background-color: white;
+    border: 1px solid #FF6F61;
+}
+.product-select select{
+    display: block;
+    width: 100%;
+    height: 35px;
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px solid #353535;
+    text-align: left;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.product-select:hover select{
+    color: #FF6F61;
+    border-color: #FF6F61;
+}
+.product-select select option {
+    color: #FF6F61;
+}
+.product-select select option:hover {
+    color: white;
+    background-color: #FF6F61;
+}
+/**********************************/
+/******** End Product Search CSS ********/
+/**********************************/
 
 
 

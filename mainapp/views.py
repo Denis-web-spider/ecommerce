@@ -1,29 +1,19 @@
 from django.shortcuts import render, reverse, redirect
 from django.views.generic import View
-from django.core.paginator import Paginator, EmptyPage
 from django.contrib import messages
 from django.conf import settings
 
 from .models import Category, Product, SubCategory, ReturnLetter, ReturnItem
 from .mixins import LeftSideBarMixin
-from .forms import ProductForm, SearchForm, populate_form_choice_fields, ReturnLetterForm, ReturnItemFormset
-from .utils import get_queryset_that_contains_in_title_every_word_in_search_string
+from .forms import ProductForm, SearchForm, ReturnLetterForm, ReturnItemFormset
+from .utils import (
+    products_queryset_searched_sorted_and_filtered,
+    products_pagination
+)
 from .mails import send_return_letter_mail_for_admin
-
-from cart.models import Order
 
 from cart.views import get_cart
 
-
-SORT_CHOICES = [
-        ('-ratting', 'По умолчанию'),
-        ('title', 'Наименование (А -> Я)'),
-        ('-title', 'Наименование (Я -> А)'),
-        ('-ratting', 'Рейтинг (по убыванию)'),
-        ('ratting', 'Рейтинг (по возростанию)'),
-        ('-price', 'Цена (по убыванию)'),
-        ('price', 'Цена (по возрастанию)')
-    ]
 
 class HomePageView(LeftSideBarMixin, View):
 
@@ -57,40 +47,17 @@ class CategoryProductsListView(LeftSideBarMixin, View):
 
         current_category = Category.objects.get(slug=slug)
         products = current_category.get_all_products()
+        products = products_queryset_searched_sorted_and_filtered(products, request)
+        page_obj, page_range = products_pagination(products, request)
 
         form = SearchForm(request.GET)
+        form.populate_choice_fields(products)
         form.fields['title'].widget.attrs.update({'data-category': f'{current_category}'})
-        form.fields['sort'].choices = SORT_CHOICES
-        if form.is_valid():
-            if form.cleaned_data['title']:
-                products = get_queryset_that_contains_in_title_every_word_in_search_string(products, form.cleaned_data['title'])
-                products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])
-                products = products.order_by(form.cleaned_data['sort'])
-            else:
-                if form.cleaned_data['sort']:
-                    products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])
-                else:
-                    products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])
-        paginator = Paginator(products, 15)
-        page_number = int(request.GET.get('page', 1))
-
-        try:
-            page_products = paginator.page(page_number)
-        except EmptyPage:
-            page_products = paginator.page(1)
-
-        if page_number - 6 >= 0:
-            page_range = list(paginator.page_range)[page_number - 6:page_number + 5]
-            if len(page_range) < 11:
-                index = 11 - len(page_range)
-                page_range = list(paginator.page_range)[page_number - 6 - index:page_number + 5]
-        else:
-            page_range = list(paginator.page_range)[:page_number + 9]
-
 
         context['slug'] = slug
         context['current_category'] = current_category
-        context['products'] = page_products
+        context['products'] = page_obj
+        context['products_total_count_from_search'] = products.count()
         context['page_range'] = page_range
         context['cart'] = cart
         context['form'] = form
@@ -106,44 +73,20 @@ class SubcategoryProductsListView(LeftSideBarMixin, View):
         current_category = Category.objects.get(slug=category_slug)
         current_subcategory = SubCategory.objects.get(category=current_category, slug=subcategory_slug)
         products = current_subcategory.get_all_products()
+        products = products_queryset_searched_sorted_and_filtered(products, request)
+        page_obj, page_range = products_pagination(products, request)
 
         form = SearchForm(request.GET)
-        form.fields['sort'].choices = SORT_CHOICES
+        form.populate_choice_fields(products)
         form.fields['title'].widget.attrs.update({'data-category': f'{current_category}',
                                                   'data-subcategory': f'{current_subcategory}'})
-        if form.is_valid():
-            if form.cleaned_data['title']:
-                products = get_queryset_that_contains_in_title_every_word_in_search_string(products, form.cleaned_data['title'])\
-                    .filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])\
-                    .order_by(form.cleaned_data['sort'])
-            else:
-                if form.cleaned_data['sort']:
-                    products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])
-                else:
-                    products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])
-        paginator = Paginator(products, 15)
-        page_number = int(request.GET.get('page', 1))
-
-        try:
-            page_products = paginator.page(page_number)
-        except EmptyPage:
-            page_products = paginator.page(1)
-
-        if len(list(paginator.page_range)) <= 10:
-            page_range = paginator.page_range
-        elif page_number - 6 >= 0:
-            page_range = list(paginator.page_range)[page_number - 6:page_number + 5]
-            if len(page_range) < 11:
-                index = 11 - len(page_range)
-                page_range = list(paginator.page_range)[page_number - 6 - index:page_number + 5]
-        else:
-            page_range = list(paginator.page_range)[:page_number + 9]
 
         context['slug'] = category_slug
         context['subcategory_slug'] = subcategory_slug
         context['current_category'] = current_category
         context['current_subcategory'] = current_subcategory
-        context['products'] = page_products
+        context['products'] = page_obj
+        context['products_total_count_from_search'] = products.count()
         context['page_range'] = page_range
         context['cart'] = cart
         context['form'] = form
@@ -158,41 +101,15 @@ class SearchView(LeftSideBarMixin, View):
         search_query = request.GET['search_query']
 
         products = Product.objects.all().exclude(in_stock=False)
-        products = get_queryset_that_contains_in_title_every_word_in_search_string(products, search_query)
+        products = products_queryset_searched_sorted_and_filtered(products, request)
+        page_obj, page_range = products_pagination(products, request)
 
         form = SearchForm(request.GET)
-        form.fields['sort'].choices = SORT_CHOICES
-        form.fields['title'].widget.attrs.update({'data-subsearch': f'{search_query}',
-                                                  'data-category': 'all'})
-        if form.is_valid():
-            if form.cleaned_data['title']:
-                products = get_queryset_that_contains_in_title_every_word_in_search_string(products, form.cleaned_data['title'])\
-                    .filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])\
-                    .order_by(form.cleaned_data['sort'])
-            else:
-                if form.cleaned_data['sort']:
-                    products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price']).order_by(form.cleaned_data['sort'])
-                else:
-                    products = products.filter(price__gte=form.cleaned_data['from_price'], price__lte=form.cleaned_data['to_price'])
-        paginator = Paginator(products, 15)
-        page_number = int(request.GET.get('page', 1))
+        form.populate_choice_fields(products)
+        form.fields['title'].widget.attrs.update({'data-search_query': f'{search_query}'})
 
-        try:
-            page_products = paginator.page(page_number)
-        except EmptyPage:
-            page_products = paginator.page(1)
-
-        if len(list(paginator.page_range)) <= 10:
-            page_range = paginator.page_range
-        elif page_number - 6 >= 0:
-            page_range = list(paginator.page_range)[page_number - 6:page_number + 5]
-            if len(page_range) < 11:
-                index = 11 - len(page_range)
-                page_range = list(paginator.page_range)[page_number - 6 - index:page_number + 5]
-        else:
-            page_range = list(paginator.page_range)[:page_number + 9]
-
-        context['products'] = page_products
+        context['products'] = page_obj
+        context['products_total_count_from_search'] = products.count()
         context['page_range'] = page_range
         context['cart'] = cart
         context['form'] = form
@@ -206,24 +123,17 @@ class ProductDetailView(View):
         context = {}
         current_category = Category.objects.get(slug=category_slug)
         current_subcategory = SubCategory.objects.get(category=current_category, slug=subcategory_slug)
-        current_product = Product.objects.get(id=id)
-        related_products = current_product.get_related_products()
-        reviews = current_product.reviews.all()
-        current_product_rating = current_product.rounded_ratting()
+        product = Product.objects.get(id=id)
         cart = get_cart(request)
 
         form = ProductForm()
-        form = populate_form_choice_fields(form, current_product)
-        form.fields['product_id'].widget.attrs.update({'value': f'{current_product.id}'})
+        form.populate(product)
 
         login_url = reverse('login') + '?next=' + reverse('product_detail', args=[category_slug, subcategory_slug, id])
 
         context['current_category'] = current_category
         context['current_subcategory'] = current_subcategory
-        context['current_product'] = current_product
-        context['related_products'] = related_products
-        context['reviews'] = reviews
-        context['current_product_rating'] = current_product_rating
+        context['product'] = product
         context['cart'] = cart
         context['form'] = form
         context['login_url'] = login_url
@@ -351,10 +261,3 @@ class AboutUsView(View):
         context['shop_domain_name'] = settings.SHOP_DOMAIN_NAME
 
         return render(request, 'information/about_us.html', context)
-
-class TestView(View):
-    def get(self, request):
-        context = {}
-        order = Order.objects.last()
-        context['order'] = order
-        return render(request, 'mails/order_TTN_change_mails/order_TTN_change_mail.html', context)

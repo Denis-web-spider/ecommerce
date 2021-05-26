@@ -18,52 +18,8 @@
 
 {% block search %}
 <div class="col-md-12">
-    <div class="product-view-top">
-        <div class="row">
-            <form action="{% url 'subcategory_products' slug subcategory_slug %}" method="get" id="search_form"></form>
-            <div class="col-md-4" style="padding-bottom: 10px;">
-                <div class="product-search">
-                    {{ form.title }}
-                    <button disabled><i class="fa fa-search"></i></button>
-                    {% for error in form.title.errors %}
-                    <p style="color: red; font-size: 10px;" class="text-center"><strong>{{ error }}</strong></p>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="col-md-4" style="padding-bottom: 10px;">
-                <div class="product-sort">
-                    {{ form.sort }}
-                    {% for error in form.sort.errors %}
-                    <p style="color: red; font-size: 10px;" class="text-center"><strong>{{ error }}</strong></p>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="col-md-2" style="padding-bottom: 10px;">
-                <div class="col product-price-range" style="padding: 0px;">
-                    {{ form.from_price }}
-                    <p class="text-center" style="font-size: 10px; color: gray; margin-bottom: 0px;">{{ form.from_price.help_text }}</p>
-                    {% for error in form.from_price.errors %}
-                    <p style="color: red; font-size: 10px; margin-bottom: 0px;" class="text-center"><strong>{{ error }}</strong></p>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="col-md-2" style="">
-                <div class="col product-price-range" style="padding: 0px;">
-                    {{ form.to_price }}
-                    <p class="text-center" style="font-size: 10px; color: gray; margin-bottom: 0px;">{{ form.to_price.help_text }}</p>
-                    {% for error in form.to_price.errors %}
-                    <p style="color: red; font-size: 10px; margin-bottom: 0px;" class="text-center"><strong>{{ error }}</strong></p>
-                    {% endfor %}
-                </div>
-            </div>
-            <br>
-            <br>
-            <br>
-            <div class="col-md-6 offset-md-3 text-center">
-                <button type="submit" class="btn" form="search_form" style="width: 100%;"><i class="fa fa-search"></i></button>
-            </div>
-        </div>
-    </div>
+    {% url 'subcategory_products' slug subcategory_slug as search_url %}
+    {% include 'components/products_search.html' %}
 </div>
 {% endblock search %}
 

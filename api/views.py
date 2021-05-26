@@ -7,31 +7,70 @@ from rest_framework.permissions import IsAuthenticated
 from mainapp.models import Product, Review
 from mainapp.templatetags.product_tags import remove_code_from_product_title
 
+from mainapp.utils import products_queryset_searched_sorted_and_filtered, product_sizes_comparison_for_sort
+
 from cart.views import get_cart
 from cart.models import CartItem
 
 class SearchAPIView(APIView):
-    def get(self, request, format=None):
-        search_query = request.GET['search_query']
-        category_title = request.GET.get('category', '')
-        subcategory_title = request.GET.get('subcategory', '')
-        subsearch_query = request.GET.get('subsearch_query', '')
-        if subsearch_query:
-            products = Product.objects.filter(title__icontains=subsearch_query).filter(title__icontains=search_query).exclude(in_stock=False)[:20]
-        elif subcategory_title:
-            products = Product.objects.filter(title__icontains=search_query, category__category__title=category_title, category__title=subcategory_title).exclude(in_stock=False)[:20]
-        elif category_title:
-            products = Product.objects.filter(title__icontains=search_query, category__category__title=category_title).exclude(in_stock=False)[:20]
-        else:
-            products = Product.objects.filter(title__icontains=search_query).exclude(in_stock=False)[:20]
+    def get(self, request):
+        category_title = request.GET.get('category')
+        subcategory_title = request.GET.get('subcategory')
+        only_titles = request.GET.get('only_titles')
+        size_from_query = request.GET.get('size')
+        color_from_query = request.GET.get('color')
+
+        base_products = Product.objects.exclude(in_stock=False)
+        if category_title:
+            base_products = base_products.filter(category__category__title=category_title)
+        if subcategory_title:
+            base_products = base_products.filter(category__title=subcategory_title)
+        products = products_queryset_searched_sorted_and_filtered(base_products, request)
+
         products_title = []
         for product in products:
             title = remove_code_from_product_title(product.title).strip()
             if not title in products_title:
                 products_title.append(f'{remove_code_from_product_title(product.title).strip()}')
-        products_title = products_title[:7]
+                if len(products_title) == 7:
+                    break
 
-        return Response(products_title)
+        response = {
+            'products_title': products_title,
+        }
+
+        if not only_titles:
+            total_products_count = products.count()
+            response['total_products_count'] = total_products_count
+
+            sizes = []
+            if (size_from_query and not color_from_query) or (size_from_query and color_from_query):
+                sizes_products = products_queryset_searched_sorted_and_filtered(base_products, request, all_sizes=True)
+            else:
+                sizes_products = products
+            for product in sizes_products:
+                for size in product.size_specifications():
+                    if size not in sizes:
+                        sizes.append(size)
+            try:
+                sizes.sort(key=product_sizes_comparison_for_sort)
+            except TypeError:
+                pass
+
+            colors = []
+            if (color_from_query and not size_from_query) or (color_from_query and size_from_query):
+                colors_products = products_queryset_searched_sorted_and_filtered(base_products, request, all_colors=True)
+            else:
+                colors_products = products
+            for product in colors_products:
+                for color in product.color_specifications():
+                    if color not in colors:
+                        colors.append(color)
+
+            response['sizes'] = sizes
+            response['colors'] = colors
+
+        return Response(response)
 
 class CartAPIView(APIView):
     permission_classes = [IsAuthenticated]

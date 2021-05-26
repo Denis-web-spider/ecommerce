@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ValidationError, formset_factory
 
 from .models import ReturnLetter, ReturnItem
+from .utils import product_sizes_comparison_for_sort
 
 class ProductForm(forms.Form):
     quantity = forms.CharField(initial='1', label='Количество', label_suffix=':')
@@ -9,10 +10,40 @@ class ProductForm(forms.Form):
     color = forms.ChoiceField(label='Цвет', label_suffix=':')
     product_id = forms.IntegerField(widget=forms.HiddenInput())
 
+    SIZE_CHOICES = [
+        ('', '--- Выберите значение ---')
+    ]
+
+    COLOR_CHOICES = [
+        ('', '--- Выберите значение ---')
+    ]
+
     quantity.widget.attrs.update({'form': 'add_to_cart_form'})
     size.widget.attrs.update({'form': 'add_to_cart_form'})
     color.widget.attrs.update({'form': 'add_to_cart_form'})
     product_id.widget.attrs.update({'form': 'add_to_cart_form'})
+
+    def populate(self, product):
+        sizes = product.size_specifications()
+        colors = product.color_specifications()
+
+        if sizes:
+            for size in sizes:
+                self.SIZE_CHOICES.append((size, size))
+            self.fields['size'].choices = self.SIZE_CHOICES
+        else:
+            self.fields['size'].required = False
+
+        if colors:
+            for color in colors:
+                self.COLOR_CHOICES.append((color, color))
+            self.fields['color'].choices = self.COLOR_CHOICES
+        else:
+            self.fields['color'].required = False
+
+        self.fields['product_id'].widget.attrs.update({
+            'value': f'{product.id}'
+        })
 
     def clean_quantity(self):
         quantity = self.cleaned_data['quantity']
@@ -28,11 +59,66 @@ class SearchForm(forms.Form):
     sort = forms.ChoiceField(label='Сортировка', label_suffix=':', required=False)
     from_price = forms.CharField(label='от', label_suffix=':', required=False, help_text='Минимлаьная цена')
     to_price = forms.CharField(label='до', label_suffix=':', required=False, help_text='Максимальная цена')
+    size = forms.ChoiceField(label='Размер', label_suffix=':', required=False)
+    color = forms.ChoiceField(label='Цвет', label_suffix=':', required=False)
 
-    title.widget.attrs.update({'placeholder': 'Поиск', 'form': 'search_form'})
-    sort.widget.attrs.update({'form': 'search_form'})
-    from_price.widget.attrs.update({'placeholder': 'От 0', 'form': 'search_form'})
-    to_price.widget.attrs.update({'placeholder': 'До 99999', 'form': 'search_form'})
+    SORT_CHOICES = [
+        ('-ratting', 'По умолчанию'),
+        ('title', 'Наименование (А -> Я)'),
+        ('-title', 'Наименование (Я -> А)'),
+        ('-ratting', 'Рейтинг (по убыванию)'),
+        ('ratting', 'Рейтинг (по возростанию)'),
+        ('-price', 'Цена (по убыванию)'),
+        ('price', 'Цена (по возрастанию)')
+    ]
+
+    SIZE_CHOICES = [
+        ('', 'Любой размер')
+    ]
+
+    COLOR_CHOICES = [
+        ('', 'Любой цвет')
+    ]
+
+    title.widget.attrs.update({
+        'placeholder': 'Поиск',
+        'form': 'search_form'
+    })
+    sort.widget.attrs.update({
+        'form': 'search_form'
+    })
+    from_price.widget.attrs.update({
+        'placeholder': 'От 0',
+        'form': 'search_form',
+        'class': 'only-digits',
+    })
+    to_price.widget.attrs.update({
+        'placeholder': 'До 99999',
+        'form': 'search_form',
+        'class': 'only-digits',
+    })
+    size.widget.attrs.update({
+        'form': 'search_form',
+    })
+    color.widget.attrs.update({
+        'form': 'search_form',
+    })
+
+    def populate_choice_fields(self, products):
+
+        #for product in products:
+        #    for size in product.size_specifications():
+        #        if (size, size) not in self.COLOR_CHOICES:
+        #            self.SIZE_CHOICES.append((size, size))
+
+        #for product in products:
+        #    for color in product.color_specifications():
+        #        if (color, color) not in self.COLOR_CHOICES:
+        #            self.COLOR_CHOICES.append((color, color))
+
+        self.fields['sort'].choices = self.SORT_CHOICES
+        self.fields['size'].choices = self.SIZE_CHOICES
+        self.fields['color'].choices = self.COLOR_CHOICES
 
     def clean_from_price(self):
         from_price = self.cleaned_data['from_price'].strip()
@@ -213,24 +299,5 @@ class ReturnItemForm(forms.ModelForm):
             'total_price',
             'return_reason'
         ]
-
-def populate_form_choice_fields(form, product):
-    sizes = product.size_specifications()
-    colors = product.color_specifications()
-
-    if sizes:
-        SIZE_CHOICES = [(size, size) for size in sizes]
-        SIZE_CHOICES.insert(0, ('', '--- Выберите значение ---'))
-        form.fields['size'].choices = SIZE_CHOICES
-    else:
-        form.fields['size'].required = False
-
-    if colors:
-        COLOR_CHOICES = [(color, color) for color in colors]
-        COLOR_CHOICES.insert(0, ('', '--- Выберите значение ---'))
-        form.fields['color'].choices = COLOR_CHOICES
-    else:
-        form.fields['color'].required = False
-    return form
 
 ReturnItemFormset = formset_factory(ReturnItemForm, extra=3)

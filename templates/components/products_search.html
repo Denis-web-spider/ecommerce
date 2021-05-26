@@ -1,0 +1,68 @@
+<div class="product-search-container">
+    <div class="row">
+        <form action="{{ search_url }}" method="get" id="search_form"></form>
+        <div class="col-md-4 mb-2">
+            <div class="product-search">
+                {{ form.title }}
+                <button disabled><i class="fa fa-search"></i></button>
+                {% for error in form.title.errors %}
+                <p style="color: red; font-size: 10px;" class="text-center"><strong>{{ error }}</strong></p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-4 mb-2">
+            <div class="product-select">
+                {{ form.sort }}
+                {% for error in form.sort.errors %}
+                <p style="color: red; font-size: 10px;" class="text-center"><strong>{{ error }}</strong></p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-2 mb-2">
+            <div class="col product-price-range" style="padding: 0px;">
+                {{ form.from_price }}
+                <p class="text-center" style="font-size: 10px; color: gray; margin-bottom: 0px;">{{ form.from_price.help_text }}</p>
+                {% for error in form.from_price.errors %}
+                <p style="color: red; font-size: 10px; margin-bottom: 0px;" class="text-center"><strong>{{ error }}</strong></p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-2 mb-2">
+            <div class="col product-price-range" style="padding: 0px;">
+                {{ form.to_price }}
+                <p class="text-center" style="font-size: 10px; color: gray; margin-bottom: 0px;">{{ form.to_price.help_text }}</p>
+                {% for error in form.to_price.errors %}
+                <p style="color: red; font-size: 10px; margin-bottom: 0px;" class="text-center"><strong>{{ error }}</strong></p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-4 offset-md-2 mb-2">
+            <div class="product-select">
+                {{ form.size }}
+            </div>
+        </div>
+        <div class="col-md-4 mb-2">
+            <div class="product-select">
+                {{ form.color }}
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="col-md-6 offset-md-3 text-center">
+            <button type="submit" class="btn" form="search_form" style="width: 100%;">
+                <i class="fa fa-search"></i>
+                {% if products_total_count_from_search %}
+                    (<span id="total-products-count-from-search">{{ products_total_count_from_search }}</span>)
+                {% endif %}
+            </button>
+        </div>
+    </div>
+    <div class="loader-container" id="search-form-loader">
+        <div class="row align-items-center">
+            <div class="col text-center">
+                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            </div>
+        </div>
+    </div>
+</div>

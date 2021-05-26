@@ -7,6 +7,8 @@ from django.contrib.auth import get_user_model
 from django.core.files import File
 from tempfile import NamedTemporaryFile
 
+from .utils import product_sizes_comparison_for_sort
+
 import uuid
 
 import traceback
@@ -203,15 +205,19 @@ class Product(models.Model):
     def size_specifications(self):
         try:
             sizes = self.specifications.get(feature_key__feature_key='Размер').value().split(';')
+            try:
+                sizes.sort(key=product_sizes_comparison_for_sort)
+            except TypeError:
+                pass
         except ObjectDoesNotExist:
-            sizes = None
+            sizes = []
         return sizes
 
     def color_specifications(self):
         try:
             colors = self.specifications.get(feature_key__feature_key='Цвет').value().split(';')
         except ObjectDoesNotExist:
-            colors = None
+            colors = []
         return colors
 
     def average_ratting(self):

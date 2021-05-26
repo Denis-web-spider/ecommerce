@@ -2,18 +2,18 @@
 
 <div class="product-item">
     <div class="product-title">
-        <a href="{{ product.get_absolute_url }}">{{ product.title|remove_code_from_product_title }}</a>
-        <div class="ratting">
-            {% if product.rounded_ratting != 0 %}
+        <div class="row align-items-center">
+            <a href="{{ product.get_absolute_url }}">{{ product.title|remove_code_from_product_title }}</a>
+        </div>
+    </div>
+    <div class="ratting">
+        {% if product.rounded_ratting != 0 %}
             <i class="{% if product.rounded_ratting >= 1 %}fa{% else %}far{% endif %} fa-star"></i>
             <i class="{% if product.rounded_ratting >= 2 %}fa{% else %}far{% endif %} fa-star"></i>
             <i class="{% if product.rounded_ratting >= 3 %}fa{% else %}far{% endif %} fa-star"></i>
             <i class="{% if product.rounded_ratting >= 4 %}fa{% else %}far{% endif %} fa-star"></i>
             <i class="{% if product.rounded_ratting >= 5 %}fa{% else %}far{% endif %} fa-star"></i>
-            {% else %}
-            <br>
-            {% endif %}
-        </div>
+        {% endif %}
     </div>
     <div class="product-image-my">
         <a href="{{ product.get_absolute_url }}">

@@ -15,8 +15,6 @@ from .views import (
     ClothesSizeView,
     OfferPolicyView,
     AboutUsView,
-
-    TestView
 )
 
 urlpatterns = [
@@ -28,8 +26,6 @@ urlpatterns = [
     path('clothes_size/', ClothesSizeView.as_view(), name='clothes_size'),
     path('offer_policy/', OfferPolicyView.as_view(), name='offer_policy'),
     path('about_us/', AboutUsView.as_view(), name='about_us'),
-
-    path('test/', TestView.as_view()),
 
     path('search/', SearchView.as_view(), name='search'),
     path('<str:slug>/', CategoryProductsListView.as_view(), name='category_products'),

@@ -39,7 +39,7 @@ class ProductMeasurementsInline(admin.TabularInline):
 
 class ReviewInline(admin.TabularInline):
     model = Review
-    readonly_fields = ['user', 'ratting', 'review', 'created_at']
+    readonly_fields = ['created_at']
     extra = 0
 
 class ProductAdmin(admin.ModelAdmin):
@@ -48,6 +48,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display_links = ['category_category_title', 'category_title', 'title', 'price', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
     search_fields = ['category__category__title', 'category__title', 'title', 'price', 'ratting']
     list_filter = ['category__category__title', 'in_stock', 'created_at', 'updated_at']
+    autocomplete_fields = ['category']
 
     inlines = [
         ImageInline,
