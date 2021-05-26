@@ -113,7 +113,6 @@ async function update_item_data (item_object) {
     });
 
     let result = await response.json();
-    console.log(result);
 
     update_cart_info();
 }
@@ -143,7 +142,6 @@ async function delete_item (target) {
     });
 
     let result = await response.json();
-    console.log(result);
     if (result == 'Item with id ' + item_id + ' was deleted successfully') {
         alert_massage('Товар ' + product_title + ' успешно удален из вашей корзины', 'success');
     }

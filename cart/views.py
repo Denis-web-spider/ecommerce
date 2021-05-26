@@ -7,27 +7,19 @@ from django.conf import settings
 
 from django.views.generic import View
 
-from .models import Cart, Order
+from .models import Order
 from .forms import OrderForm
 from .mails import (
     send_checkout_mail,
     send_payment_result_mail,
 )
+from .cart import get_cart
 
 from liqpay import LiqPay
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
-
-def get_cart(request):
-    if request.user.is_authenticated:
-        cart, created = Cart.objects.get_or_create(owner=request.user, completed=False)
-    else:
-        return None
-    return cart
-
-class CartView(LoginRequiredMixin, View):
-    login_url = reverse_lazy('login')
+class CartView(View):
 
     def get(self, request):
         context = {}

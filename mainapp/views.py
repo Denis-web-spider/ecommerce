@@ -12,7 +12,7 @@ from .utils import (
 )
 from .mails import send_return_letter_mail_for_admin
 
-from cart.views import get_cart
+from cart.cart import get_cart
 
 
 class HomePageView(LeftSideBarMixin, View):

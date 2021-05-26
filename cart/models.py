@@ -7,31 +7,34 @@ from mainapp.models import Product
 
 from .mails import send_order_status_change_mail, send_order_TTN_change_mail
 
+import uuid
+
 User = get_user_model()
 
 class Cart(models.Model):
     owner = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Пользователь')
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     completed = models.BooleanField(default=False, verbose_name='Завершена')
     total_quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)], verbose_name='Общее количество товара в корзине')
     total_price = models.IntegerField(default=0, verbose_name='Общая стоимость корзины')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создана')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Обновлена')
 
-    def get_total_quantity_and_price(self):
-        items = self.items.all()
-        total_quantity = 0
-        total_price = 0
-        if items:
-            for item in items:
-                total_quantity += item.quantity
-                total_price += item.total_price
-        self.total_quantity = total_quantity
-        self.total_price = total_price
-        self.save()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.was_completed = False
 
     def save(self, *args, **kwargs):
+        total_quantity = 0
+        total_price = 0
+        for item in self.items.all():
+            total_quantity += item.quantity
+            total_price += item.total_price
+        self.total_quantity = total_quantity
+        self.total_price = total_price
         super().save(*args, **kwargs)
-        if self.completed == True:
+        if (self.completed == True) and (self.completed != self.was_completed):
+            self.was_completed = True
             order = Order.objects.get(cart=self)
             for item in self.items.all():
                 item.order = order
@@ -64,12 +67,11 @@ class CartItem(models.Model):
         else:
             self.total_price = self.price * self.quantity
             super().save(*args, **kwargs)
-            if not self.order:
-                self.cart.get_total_quantity_and_price()
+            self.cart.save()
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
-        self.cart.get_total_quantity_and_price()
+        self.cart.save()
 
     def __str__(self):
         return f'{self.cart.id} | {self.product.title} | {self.quantity} | {self.total_price} | {self.created_at} | {self.updated_at}'

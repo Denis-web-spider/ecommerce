@@ -14,9 +14,9 @@ class CartItemTabularForOrderAdmin(CartItemTabular):
 
 class CartAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'owner', 'total_quantity', 'total_price', 'completed']
-    list_display_links = ['id', 'owner', 'total_quantity', 'total_price', 'completed']
-    search_fields = ['owner.first_name', 'owner.last_name', 'total_quantity', 'total_price', 'completed']
+    list_display = ['uuid', 'owner', 'total_quantity', 'total_price', 'completed']
+    list_display_links = ['uuid', 'owner', 'total_quantity', 'total_price', 'completed']
+    search_fields = ['uuid', 'owner.first_name', 'owner.last_name', 'total_quantity', 'total_price', 'completed']
     list_filter = ['completed', 'created_at']
     inlines = [CartItemTabularForOrderAdmin]
 

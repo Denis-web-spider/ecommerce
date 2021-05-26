@@ -9,7 +9,7 @@ from mainapp.templatetags.product_tags import remove_code_from_product_title
 
 from mainapp.utils import products_queryset_searched_sorted_and_filtered, product_sizes_comparison_for_sort
 
-from cart.views import get_cart
+from cart.cart import get_cart
 from cart.models import CartItem
 
 class SearchAPIView(APIView):
@@ -73,7 +73,6 @@ class SearchAPIView(APIView):
         return Response(response)
 
 class CartAPIView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         cart = get_cart(request)

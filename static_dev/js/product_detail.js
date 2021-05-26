@@ -33,8 +33,6 @@ async function process_product_form (event) {
 
     let result = await response.json();
 
-    console.log(result);
-
     let my_message;
     if (result.detail && result.detail == 'Учетные данные не были предоставлены.') {
         let a = '<a href="' + login_url + '" class="alert-link">тут</a>'
@@ -112,8 +110,6 @@ async function process_add_review_form (event) {
 
     let result = await response.json();
 
-    console.log(result);
-
     if (result.created == true) {
         create_current_user_review(form);
 
@@ -153,8 +149,6 @@ async function process_delete_review_form (event) {
     })
 
     result = await response.json();
-
-    console.log(result);
 
     if (result.deleted == true) {
         let my_message = 'Ваш отзыв был успешно удален';

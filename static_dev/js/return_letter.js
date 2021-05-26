@@ -21,7 +21,6 @@ function add_return_product_item (event) {
         }
 
     document.getElementById('id_form-TOTAL_FORMS').value = new_row.dataset.count;
-    //document.getElementById('id_form-MAX_NUM_FORMS').value = new_row.dataset.count;
     }
 
     return_product_table.querySelector('tbody').append(new_row);

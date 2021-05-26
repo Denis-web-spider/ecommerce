@@ -80,7 +80,6 @@ async function process_main_search_input (event) {
 
     let response = await fetch(fetch_url);
     let response_json = await response.json();
-    console.log(response_json);
 
     let search_panel = document.querySelector('.search-panel');
     if (search_panel) search_panel.innerHTML = '';
@@ -126,7 +125,6 @@ async function process_second_search_form_input (event) {
 
     let response = await fetch(fetch_url);
     let response_json = await response.json();
-    console.log(response_json);
 
     let search_panel = document.querySelector('.search-panel');
     if (search_panel) search_panel.innerHTML = '';
@@ -181,7 +179,6 @@ async function process_second_search_form_change (event) {
 
         let response = await fetch(fetch_url);
         let response_json = await response.json();
-        console.log(response_json);
 
         document.getElementById('total-products-count-from-search').textContent = response_json.total_products_count;
 

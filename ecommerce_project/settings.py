@@ -120,7 +120,7 @@ DATABASES = {
     }
 }
 
-DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -195,7 +195,9 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
 
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 365 * 5
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 14
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_CART_UUID_KEY = 'cart'
 
 AUTHENTICATION_BACKENDS = ['users.backends.EmailBackend']
 
@@ -208,7 +210,6 @@ REST_FRAMEWORK = {
 }
 
 # Deployment settings
-
 if not int(os.getenv('DEBUG')):
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
