@@ -55,6 +55,9 @@
                                         <div class="price">
                                             <h4>Цена:</h4>
                                             <p>{{ product.price|pretty_price }} грн.</p>
+                                            {% if product.discount %}
+                                                <p class="product-price-before-discount"> {{ product.price_before_discount|pretty_price }} грн.</p>
+                                            {% endif %}
                                         </div>
 
                                         <form action="#" id="add_to_cart_form" method="post"></form>
@@ -324,36 +327,38 @@
                                     </div>
                                 </div>
                             </div>
-                        {% with related_products=product.get_related_products %}
-                            {% if related_products|length > 3 %}
-                                <div class="product">
-                                    <div class="section-header">
-                                        <h1>Похожие товары</h1>
-                                    </div>
-                                    <div class="row align-items-center product-slider product-slider-3">
-                                        {% for product in related_products %}
-                                            <div class="col-lg-3">
-                                                {% include 'components/product_item.html' %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
+                    </div>
 
-                        {% if related_products %}
-                            <!-- Side Bar Start -->
-                            <div class="col-lg-4 sidebar">
-                                <div class="sidebar-widget widget-slider">
-                                    <div class="sidebar-slider normal-slider">
-                                        {% for product in related_products %}
-                                            {% include 'components/product_item.html' %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
+                    {% with related_products=product.get_related_products %}
+                    {% if related_products %}
+                    <!-- Side Bar Start -->
+                    <div class="col-lg-4 sidebar">
+                        <div class="sidebar-widget widget-slider">
+                            <div class="sidebar-slider normal-slider">
+                                {% for product in related_products %}
+                                {% include 'components/product_item.html' %}
+                                {% endfor %}
                             </div>
-                            <!-- Side Bar End -->
-                        {% endif %}
+                        </div>
+                    </div>
+                    <!-- Side Bar End -->
+                    {% endif %}
+                    {% if related_products|length > 3 %}
+                    <div class="col-lg-9">
+                        <div class="product">
+                            <div class="section-header">
+                                <h1>Похожие товары</h1>
+                            </div>
+                            <div class="row align-items-center product-slider product-slider-3">
+                                {% for product in related_products %}
+                                <div class="col-lg-3">
+                                    {% include 'components/product_item.html' %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                     {% endwith %}
                 </div>
             </div>

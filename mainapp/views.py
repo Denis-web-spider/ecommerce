@@ -51,7 +51,7 @@ class CategoryProductsListView(LeftSideBarMixin, View):
         page_obj, page_range = products_pagination(products, request)
 
         form = SearchForm(request.GET)
-        form.populate_choice_fields(products)
+        form.populate_choice_fields()
         form.fields['title'].widget.attrs.update({'data-category': f'{current_category}'})
 
         context['slug'] = slug
@@ -77,7 +77,7 @@ class SubcategoryProductsListView(LeftSideBarMixin, View):
         page_obj, page_range = products_pagination(products, request)
 
         form = SearchForm(request.GET)
-        form.populate_choice_fields(products)
+        form.populate_choice_fields()
         form.fields['title'].widget.attrs.update({'data-category': f'{current_category}',
                                                   'data-subcategory': f'{current_subcategory}'})
 
@@ -100,12 +100,12 @@ class SearchView(LeftSideBarMixin, View):
         cart = get_cart(request)
         search_query = request.GET['search_query']
 
-        products = Product.objects.all().exclude(in_stock=False)
+        products = Product.objects.all().exclude(in_stock=False).order_by('-discount')
         products = products_queryset_searched_sorted_and_filtered(products, request)
         page_obj, page_range = products_pagination(products, request)
 
         form = SearchForm(request.GET)
-        form.populate_choice_fields(products)
+        form.populate_choice_fields()
         form.fields['title'].widget.attrs.update({'data-search_query': f'{search_query}'})
 
         context['products'] = page_obj
@@ -261,3 +261,4 @@ class AboutUsView(View):
         context['shop_domain_name'] = settings.SHOP_DOMAIN_NAME
 
         return render(request, 'information/about_us.html', context)
+

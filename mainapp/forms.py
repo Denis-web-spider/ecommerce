@@ -2,21 +2,12 @@ from django import forms
 from django.forms import ValidationError, formset_factory
 
 from .models import ReturnLetter, ReturnItem
-from .utils import product_sizes_comparison_for_sort
 
 class ProductForm(forms.Form):
     quantity = forms.CharField(initial='1', label='Количество', label_suffix=':')
     size = forms.ChoiceField(label='Размер', label_suffix=':')
     color = forms.ChoiceField(label='Цвет', label_suffix=':')
     product_id = forms.IntegerField(widget=forms.HiddenInput())
-
-    SIZE_CHOICES = [
-        ('', '--- Выберите значение ---')
-    ]
-
-    COLOR_CHOICES = [
-        ('', '--- Выберите значение ---')
-    ]
 
     quantity.widget.attrs.update({'form': 'add_to_cart_form'})
     size.widget.attrs.update({'form': 'add_to_cart_form'})
@@ -27,17 +18,25 @@ class ProductForm(forms.Form):
         sizes = product.size_specifications()
         colors = product.color_specifications()
 
+        SIZE_CHOICES = [
+            ('', '--- Выберите значение ---')
+        ]
+
+        COLOR_CHOICES = [
+            ('', '--- Выберите значение ---')
+        ]
+
         if sizes:
             for size in sizes:
-                self.SIZE_CHOICES.append((size, size))
-            self.fields['size'].choices = self.SIZE_CHOICES
+                SIZE_CHOICES.append((size, size))
+            self.fields['size'].choices = SIZE_CHOICES
         else:
             self.fields['size'].required = False
 
         if colors:
             for color in colors:
-                self.COLOR_CHOICES.append((color, color))
-            self.fields['color'].choices = self.COLOR_CHOICES
+                COLOR_CHOICES.append((color, color))
+            self.fields['color'].choices = COLOR_CHOICES
         else:
             self.fields['color'].required = False
 
@@ -104,17 +103,7 @@ class SearchForm(forms.Form):
         'form': 'search_form',
     })
 
-    def populate_choice_fields(self, products):
-
-        #for product in products:
-        #    for size in product.size_specifications():
-        #        if (size, size) not in self.COLOR_CHOICES:
-        #            self.SIZE_CHOICES.append((size, size))
-
-        #for product in products:
-        #    for color in product.color_specifications():
-        #        if (color, color) not in self.COLOR_CHOICES:
-        #            self.COLOR_CHOICES.append((color, color))
+    def populate_choice_fields(self):
 
         self.fields['sort'].choices = self.SORT_CHOICES
         self.fields['size'].choices = self.SIZE_CHOICES

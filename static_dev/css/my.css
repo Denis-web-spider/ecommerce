@@ -306,6 +306,28 @@
     max-width: 70px;
     margin: 20px auto;
 }
+.product-item .product-price {
+    padding: 10px 20px 15px 20px;
+}
+.product-item .product-discount-percent {
+    position: absolute;
+    top: 15px;
+    right: 0px;
+    padding: 0px 15px;
+    font-size: 1.2rem;
+    background-color: #FF6F61;
+    color: yellow;
+}
+.product-item .product-price-before-discount {
+    display: inline;
+    color: #FF6F61;
+    font-size: 1.75rem;
+    text-decoration: line-through;
+    transition: all .3s;
+}
+.product-item:hover .product-price-before-discount {
+    color: black;
+}
 .product-item:hover .product-colors {
     background-color: #FF6F61;
     border-color: #FF6F61;
@@ -501,10 +523,20 @@
 /******** End Product Search CSS ********/
 /**********************************/
 
+/**********************************/
+/******** Product Detail CSS ********/
+/**********************************/
 
+.product-content .price p.product-price-before-discount {
+    display: inline;
+    margin-left: 15px;
+    color: black;
+    text-decoration: line-through;
+}
 
-
-
+/**********************************/
+/******** Product Detail CSS ********/
+/**********************************/
 
 
 

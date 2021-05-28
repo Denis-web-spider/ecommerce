@@ -28,6 +28,12 @@
                     <div>{% colors_count_representation product %}</div>
                 </div>
             {% endif %}
+
+            {% if product.discount %}
+                <div class="product-discount-percent">
+                    - {{ product.discount }} %
+                </div>
+            {% endif %}
         </a>
     </div>
     <div class="product-sizes">
@@ -38,8 +44,13 @@
         </div>
     </div>
     <div class="product-price">
-        <div class="col text-center">
-            <h3>{{ product.price|pretty_price }} грн.</h3>
+        <div class="row align-items-center">
+             <div class="col text-center">
+                {% if product.discount %}
+                    <h2 class="product-price-before-discount">{{ product.price_before_discount|pretty_price }} грн.</h2>
+                {% endif %}
+                <h3>{{ product.price|pretty_price }} грн.</h3>
+            </div>
         </div>
     </div>
 </div>

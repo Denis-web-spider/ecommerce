@@ -44,11 +44,12 @@ class ReviewInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
 
-    list_display = ['category_category_title', 'category_title', 'title', 'price', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
-    list_display_links = ['category_category_title', 'category_title', 'title', 'price', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
+    list_display = ['category_category_title', 'category_title', 'title', 'price', 'margin', 'discount', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
+    list_display_links = ['category_category_title', 'category_title', 'title', 'price', 'margin', 'discount', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
     search_fields = ['category__category__title', 'category__title', 'title', 'price', 'ratting']
     list_filter = ['category__category__title', 'in_stock', 'created_at', 'updated_at']
     autocomplete_fields = ['category']
+    actions = ['set_max_discount']
 
     inlines = [
         ImageInline,
@@ -71,6 +72,14 @@ class ProductAdmin(admin.ModelAdmin):
     def category_category_title(self, obj):
         return obj.category.category.title
     category_category_title.short_description = 'Категория'
+
+    @admin.action(description='Установить максимальную скидку')
+    def set_max_discount(self, request, queryset):
+        for target_product in queryset:
+            the_same_product_in_all_categories = Product.objects.filter(title=target_product.title)
+            for product in the_same_product_in_all_categories:
+                product.discount = 100
+                product.save()
 
 class ProductFeaturesInline(admin.TabularInline):
     model = ProductFeatures

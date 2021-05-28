@@ -98,7 +98,7 @@ def products_pagination(products, request: HttpRequest):
     return: page_obj, page_range
     '''
 
-    paginator = Paginator(products, 15)
+    paginator = Paginator(products, 30)
     page_number = int(request.GET.get('page', 1))
 
     try:

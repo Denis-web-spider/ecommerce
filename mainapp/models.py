@@ -53,7 +53,7 @@ class Category(models.Model):
         return reverse('category_products', args=[self.slug])
 
     def get_all_products(self):
-        return Product.objects.filter(category__category=self).order_by('-ratting').exclude(in_stock=False)
+        return Product.objects.filter(category__category=self).exclude(in_stock=False).order_by('-discount')
 
     def get_slug(self, russian_string):
         translate = {
@@ -121,7 +121,7 @@ class SubCategory(models.Model):
         return Product.objects.filter(category=self).exclude(in_stock=False).count()
 
     def get_all_products(self):
-        return self.product_set.all().order_by('-ratting').exclude(in_stock=False)
+        return self.product_set.all().exclude(in_stock=False).order_by('-discount')
 
     def get_slug(self, russian_string):
         translate = {
@@ -183,8 +183,11 @@ class Product(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название товара')
     description = models.TextField(verbose_name='Описание товара', blank=True)
     markup = models.PositiveIntegerField(default=25, verbose_name='Наценка в %')
+    margin = models.PositiveIntegerField(verbose_name='Маржа в %')
+    discount = models.PositiveIntegerField(default=0, verbose_name='Скидка в %')
     true_price = models.IntegerField(verbose_name='Цена на товар без наценки')
     price = models.IntegerField(verbose_name='Цена на товар')
+    price_before_discount = models.IntegerField(blank=True, null=True, verbose_name='Цена на товар до скидки')
     ratting = models.FloatField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)], verbose_name='Оценка')
     in_stock = models.BooleanField(verbose_name='В наличиии', default=True)
     created_at = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
@@ -237,9 +240,8 @@ class Product(models.Model):
     def get_price_with_markup(self):
         return round(self.true_price / 100 * self.markup + self.true_price)
 
-    def change_markup(self):
+    def set_default_markup(self):
         main_category_title = self.category.category.title
-        subcategory_title = self.category.title
 
         if self.true_price < 50:
             self.markup = 100
@@ -253,68 +255,23 @@ class Product(models.Model):
         elif self.true_price > 400:
             self.markup = 20
 
-        if main_category_title == 'Аксессуары':
-            if self.true_price < 50:
-                self.markup = 200
-            elif self.true_price < 100:
-                self.markup = 150
-            elif self.true_price < 150:
-                self.markup = 100
+        #if main_category_title == 'Новинки':
+        #    self.markup = 50
+        #    the_same_product_in_another_categories = Product.objects.filter(title=self.title).exclude(id=self.id)
+        #    for product in the_same_product_in_another_categories:
+        #        product.markup = self.markup
+        #        product.save()
 
-        if main_category_title == 'Батал':
-            if self.true_price < 100:
-                self.markup = 100
-            elif self.true_price < 50:
-                self.markup = 50
+    def calculate_and_change_margin(self):
+        self.margin = round(((self.price - self.true_price) / self.price) * 100)
 
-        if main_category_title == 'Детская обувь':
-            if self.true_price < 75:
-                self.markup = 100
-            elif self.true_price < 125:
-                self.markup = 50
+    def set_max_discount_limit(self, percent_from_markup=50):
+        max_discount = round(self.markup / (100 / percent_from_markup))
+        if self.discount > max_discount:
+            self.discount = max_discount
 
-        if main_category_title == 'Детская одежда':
-            if self.true_price < 100:
-                self.markup = 50
-
-        if main_category_title == '	Женская обувь':
-            if self.true_price < 50:
-                self.markup = 150
-            elif self.true_price < 100:
-                self.markup = 100
-
-        if main_category_title == 'Женская одежда' or '	Мужская одежда':
-            if self.true_price < 100:
-                self.markup = 100
-
-        if (main_category_title == 'Женская одежда' and subcategory_title == 'Белье') or \
-           (main_category_title == 'Мужская одежда' and subcategory_title == 'Белье'):
-            if self.true_price < 50:
-                self.markup = 100
-            elif self.true_price < 100:
-                self.markup = 75
-
-        if main_category_title == 'Мужская обувь':
-            if self.true_price < 50:
-                self.markup = 100
-            elif self.true_price < 100:
-                self.markup = 50
-
-        if main_category_title == 'Новинки':
-            if self.true_price < 50:
-                self.markup = 100
-            elif self.true_price < 100:
-                self.markup = 50
-
-        if main_category_title == 'Подростковая обувь':
-            if self.true_price < 100:
-                self.markup = 50
-
-        if main_category_title == 'Подростковая одежда':
-            if self.true_price < 50:
-                self.markup = 100
-            elif self.true_price < 100:
-                self.markup = 50
+    def get_price_with_discount(self):
+        return self.price - round((self.price / 100) * self.discount)
 
     def get_related_products(self, count=10):
         products_with_four_star_or_greater = Product.objects.filter(category=self.category, ratting__gte=3.5).exclude(id=self.id).order_by('-ratting')[:count]
@@ -328,8 +285,14 @@ class Product(models.Model):
         return reverse('product_detail', args=[self.category.category.slug, self.category.slug, str(self.id)])
 
     def save(self, *args, **kwargs):
-        self.change_markup()
+        self.set_default_markup()
         self.price = self.get_price_with_markup()
+        self.price_before_discount = self.price
+        self.calculate_and_change_margin()
+        self.set_max_discount_limit()
+        if self.discount:
+            self.price = self.get_price_with_discount()
+            self.calculate_and_change_margin()
         super().save(*args, **kwargs)
 
     class Meta:

@@ -18,7 +18,7 @@
                     {% block slider %}
                     {% endblock slider %}
                     <!-- Main Slider End -->
-                    <div class="col-lg-8">
+                    <div class="col-lg-9">
                         <div class="row justify-content-center">
                             {% block search %}
                             {% endblock search %}
@@ -26,9 +26,7 @@
                                 <div class="col-10 col-sm-6 col-md-6 col-lg-4">
                                     <div class="widget-slider">
                                         <div class="sidebar-slider-my normal-slider">
-                                            {% for image in product.images_for_category_list %}
-                                                {% include 'components/product_item.html' with image_url=image.image.url image_alt=image.title %}
-                                            {% endfor %}
+                                            {% include 'components/product_item.html' %}
                                         </div>
                                     </div>
                                 </div>
