@@ -134,6 +134,11 @@ class Order(models.Model):
         if self.latest_status != self.status:
             self.latest_status = self.status
             send_order_status_change_mail(self)
+            if self.status == self.COMPLETED:
+                for item in self.cart.items.all():
+                    product = item.product
+                    product.sales_count += item.quantity
+                    product.save()
         if self.latest_TTN != self.TTN:
             self.latest_TTN = self.TTN
             send_order_TTN_change_mail(self)

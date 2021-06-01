@@ -20,20 +20,15 @@ class HomePageView(LeftSideBarMixin, View):
     def get(self, request):
         context = self.get_context_data()
 
-        high_ratting_products_for_main_slider = []
-        for category in Category.objects.all():
-            products = tuple(category.get_all_products()[:2])
-            if len(products) == 2:
-                high_ratting_products_for_main_slider.append(products)
-
-        side_products = Product.objects.all().order_by('-ratting').exclude(in_stock=False)[:5]
-        most_popular_products = Product.objects.all().order_by('-ratting').exclude(in_stock=False)[:10]
-        recent_products = Product.objects.filter(category__category__title='Новинки').order_by('-ratting').exclude(in_stock=False)[:10]
+        products_for_main_slider = Product.objects.products_for_main_slider()
+        products_for_side_slider = Product.objects.products_for_side_slider()
+        most_popular_products_for_main_page_slider = Product.objects.most_popular_products_for_main_page_slider()
+        recent_products = Product.objects.filter(category__category__title='Новинки', in_stock=True).order_by('-ratting')[:10]
         cart = get_cart(request)
 
-        context['high_ratting_products_for_main_slider'] = high_ratting_products_for_main_slider
-        context['side_products'] = side_products
-        context['most_popular_products'] = most_popular_products
+        context['products_for_main_slider'] = products_for_main_slider
+        context['products_for_side_slider'] = products_for_side_slider
+        context['most_popular_products_for_main_page_slider'] = most_popular_products_for_main_page_slider
         context['recent_products'] = recent_products
         context['cart'] = cart
 

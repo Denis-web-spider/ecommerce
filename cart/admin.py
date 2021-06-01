@@ -67,7 +67,11 @@ class CartItemAdmin(admin.ModelAdmin):
     fields = ['cart', 'order', 'product', 'quantity', 'size', 'color', 'price', 'total_price']
     readonly_fields = ['cart', 'order', 'product']
     def cart_owner(self, obj):
-        return obj.cart.owner.email
+        try:
+            email = obj.cart.owner.email
+        except AttributeError:
+            email = ''
+        return email
     cart_owner.short_description = 'Владелец корзины'
 
     def product_title(self, obj):

@@ -44,8 +44,8 @@ class ReviewInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
 
-    list_display = ['category_category_title', 'category_title', 'title', 'price', 'margin', 'discount', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
-    list_display_links = ['category_category_title', 'category_title', 'title', 'price', 'margin', 'discount', 'ratting', 'in_stock', 'image_icon', 'created_at', 'updated_at']
+    list_display = ['category_category_title', 'category_title', 'title', 'price', 'margin', 'discount', 'ratting', 'sales_count', 'in_stock', 'image_icon', 'created_at', 'updated_at']
+    list_display_links = ['category_category_title', 'category_title', 'title', 'price', 'margin', 'discount', 'ratting', 'sales_count', 'in_stock', 'image_icon', 'created_at', 'updated_at']
     search_fields = ['category__category__title', 'category__title', 'title', 'price', 'ratting']
     list_filter = ['category__category__title', 'in_stock', 'created_at', 'updated_at']
     autocomplete_fields = ['category']

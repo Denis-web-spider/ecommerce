@@ -16,7 +16,7 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="header-slider normal-slider">
-                            {% for product_1, product_2 in high_ratting_products_for_main_slider %}
+                            {% for product_1, product_2 in products_for_main_slider %}
                                 <div class="header-slider-item">
                                     <img style="width: 49%; display: inline;" src="{{ product_1.image.url }}" alt="{{ product_1.title }}" />
                                     <img style="width: 49%; display: inline;" src="{{ product_2.image.url }}" alt="{{ product_2.title }}" />
@@ -31,7 +31,7 @@
                     <div class="col-10 col-lg-3">
                         <div class="widget-slider">
                             <div class="sidebar-slider normal-slider">
-                                {% for product in side_products %}
+                                {% for product in products_for_side_slider %}
                                     {% include 'components/product_item.html' %}
                                 {% endfor %}
                             </div>
@@ -99,7 +99,7 @@
                 </div>
                 <div class="row justify-content-center">
                     <div class="row align-items-center product-slider product-slider-4 col-10 col-sm-12">
-                       {% for product in most_popular_products %}
+                       {% for product in most_popular_products_for_main_page_slider %}
                         <div class="col-lg-3">
                             {% include 'components/product_item.html' %}
                         </div>

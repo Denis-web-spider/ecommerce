@@ -177,6 +177,64 @@ class SubCategory(models.Model):
         verbose_name = 'Подкатегория'
         verbose_name_plural = 'Подкатегории'
 
+class ProductManager(models.Manager):
+
+    def get_two_products_for_main_slider(self, products, category_title, subcategory_title_1, subcategory_title_2):
+        first_product = products.filter(category__category__title=category_title, category__title=subcategory_title_1).first()
+        second_product = products.filter(category__category__title=category_title, category__title=subcategory_title_2).first()
+        if first_product and second_product:
+            return first_product, second_product
+        return None
+
+    def products_for_main_slider(self):
+        products = self.get_queryset().filter(in_stock=True).order_by('-price')
+
+        result_products = []
+
+        two_products = self.get_two_products_for_main_slider(products, 'Батал', 'Мужская одежда (батал)', 'Женская одежда (батал)')
+        if two_products:
+            result_products.append(two_products)
+
+        two_products = self.get_two_products_for_main_slider(products, 'Мужская одежда', 'Футболки', 'Шорты')
+        if two_products:
+            result_products.append(two_products)
+
+        two_products = self.get_two_products_for_main_slider(products, 'Женская одежда', 'Блузки', 'Платья')
+        if two_products:
+            result_products.append(two_products)
+
+        two_products = self.get_two_products_for_main_slider(products, 'Женская обувь', 'Кроссовки', 'Сандали')
+        if two_products:
+            result_products.append(two_products)
+
+        two_products = self.get_two_products_for_main_slider(products, 'Мужская обувь', 'Кроссовки', 'Сандали')
+        if two_products:
+            result_products.append(two_products)
+
+        two_products = self.get_two_products_for_main_slider(products, 'Аксессуары', 'Сумки', 'Рюкзаки')
+        if two_products:
+            result_products.append(two_products)
+
+        two_products = self.get_two_products_for_main_slider(products, 'Подростковая одежда', 'Для девочек', 'Для мальчиков')
+        if two_products:
+            result_products.append(two_products)
+
+        two_products = self.get_two_products_for_main_slider(products, 'Детская одежда', 'Костюмы', 'Пиджаки')
+        if two_products:
+            result_products.append(two_products)
+
+        two_products = self.get_two_products_for_main_slider(products, 'Новинки', 'Женские', 'Мужские')
+        if two_products:
+            result_products.append(two_products)
+
+        return result_products
+
+    def products_for_side_slider(self):
+        return self.get_queryset().filter(in_stock=True, price__gt=150).order_by('-discount')[:10]
+
+    def most_popular_products_for_main_page_slider(self):
+        return self.get_queryset().filter(in_stock=True, price__gt=150).order_by('-sales_count')[:10]
+
 class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     category = models.ForeignKey(SubCategory, verbose_name='Подкатегория товара', on_delete=models.CASCADE)
@@ -189,9 +247,12 @@ class Product(models.Model):
     price = models.IntegerField(verbose_name='Цена на товар')
     price_before_discount = models.IntegerField(blank=True, null=True, verbose_name='Цена на товар до скидки')
     ratting = models.FloatField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)], verbose_name='Оценка')
+    sales_count = models.PositiveIntegerField(default=0, verbose_name='Количество продаж')
     in_stock = models.BooleanField(verbose_name='В наличиии', default=True)
     created_at = models.DateTimeField(verbose_name='Создан', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='Обновлён', blank=True, null=True)
+
+    objects = ProductManager()
 
     def __str__(self):
         return self.title
@@ -240,8 +301,7 @@ class Product(models.Model):
     def get_price_with_markup(self):
         return round(self.true_price / 100 * self.markup + self.true_price)
 
-    def set_default_markup(self):
-        main_category_title = self.category.category.title
+    def set_markup(self):
 
         if self.true_price < 50:
             self.markup = 100
@@ -255,15 +315,21 @@ class Product(models.Model):
         elif self.true_price > 400:
             self.markup = 20
 
-        #if main_category_title == 'Новинки':
-        #    self.markup = 50
-        #    the_same_product_in_another_categories = Product.objects.filter(title=self.title).exclude(id=self.id)
-        #    for product in the_same_product_in_another_categories:
-        #        product.markup = self.markup
-        #        product.save()
+        self.save()
+
+    def set_true_price_and_markup_in_the_same_product_in_another_categories(self):
+        the_same_product_in_another_categories = Product.objects.filter(title=self.title).exclude(id=self.id)
+        for product in the_same_product_in_another_categories:
+            if product.true_price != self.true_price or product.markup != self.markup:
+                product.true_price = self.true_price
+                product.markup = self.markup
+                product.save()
 
     def calculate_and_change_margin(self):
-        self.margin = round(((self.price - self.true_price) / self.price) * 100)
+        if self.true_price == 0:
+            self.margin = 0
+        else:
+            self.margin = round(((self.price - self.true_price) / self.price) * 100)
 
     def set_max_discount_limit(self, percent_from_markup=50):
         max_discount = round(self.markup / (100 / percent_from_markup))
@@ -285,7 +351,6 @@ class Product(models.Model):
         return reverse('product_detail', args=[self.category.category.slug, self.category.slug, str(self.id)])
 
     def save(self, *args, **kwargs):
-        self.set_default_markup()
         self.price = self.get_price_with_markup()
         self.price_before_discount = self.price
         self.calculate_and_change_margin()
@@ -294,6 +359,7 @@ class Product(models.Model):
             self.price = self.get_price_with_discount()
             self.calculate_and_change_margin()
         super().save(*args, **kwargs)
+        self.set_true_price_and_markup_in_the_same_product_in_another_categories()
 
     class Meta:
         verbose_name = 'Продукт'
