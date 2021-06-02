@@ -315,8 +315,6 @@ class Product(models.Model):
         elif self.true_price > 400:
             self.markup = 20
 
-        self.save()
-
     def set_true_price_and_markup_in_the_same_product_in_another_categories(self):
         the_same_product_in_another_categories = Product.objects.filter(title=self.title).exclude(id=self.id)
         for product in the_same_product_in_another_categories:
@@ -351,6 +349,7 @@ class Product(models.Model):
         return reverse('product_detail', args=[self.category.category.slug, self.category.slug, str(self.id)])
 
     def save(self, *args, **kwargs):
+        self.set_markup()
         self.price = self.get_price_with_markup()
         self.price_before_discount = self.price
         self.calculate_and_change_margin()

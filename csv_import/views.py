@@ -58,7 +58,13 @@ class CsvImportView(View):
                             subcategory_title = row['Категория']
                         subcategory, _ = SubCategory.objects.get_or_create(category=category, title=subcategory_title)
 
-                        product, product_created = Product.objects.get_or_create(category=subcategory, title=row['Название'])
+                        try:
+                            product_created = False
+                            product = Product.objects.get(category=subcategory, title=row['Название'])
+                        except ObjectDoesNotExist:
+                            product = Product(category=subcategory, title=row['Название'])
+                            product_created = True
+
                         product.description = row['Описание']
                         product.true_price = int(row['Цена'])
                         product.updated_at = timezone.now()
@@ -66,7 +72,6 @@ class CsvImportView(View):
                         product.save()
 
                         if product_created:
-                            product.set_markup()
                             image_urls = row['Изображения'].split(';')
                             for image_url in image_urls:
                                 image = Image(product=product, image_url=image_url)
